@@ -1,0 +1,50 @@
+# ---------------------------------------------------------------------------- #
+# Build output
+
+# The build output directory
+build/
+
+# Include folders named build in the src dir
+!*/src/**/build/
+
+# Compiled class files
+*.class
+
+# Package Files
+*.jar
+*.zip
+*.tar.gz
+*.rar
+
+# ---------------------------------------------------------------------------- #
+# Runtime generated files
+
+# Log file
+*.log
+
+# JVM crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# ---------------------------------------------------------------------------- #
+# Intellij files
+
+# The Intellij project cache dir
+.idea/
+
+# Intellij project files
+*.iml
+
+# ---------------------------------------------------------------------------- #
+# Gradle
+
+# Gradle project cache dir
+.gradle/
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# ---------------------------------------------------------------------------- #
+# Visual Studio Code
+
+# The Visual Studio Code project cache dir.
+.vs/
