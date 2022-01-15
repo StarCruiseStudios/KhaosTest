@@ -125,6 +125,15 @@ detekt {
     config = files("../config/detekt/detekt.yml")
 }
 
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        configureEach {
+            includes.from("packages.md")
+            samples.from("src/test/kotlin")
+        }
+    }
+}
+
 // =============================================================================
 /*  Publish Configuration */
 
