@@ -309,4 +309,156 @@ class ValidationsTest {
             }
         )
     }
+
+    @Test
+    fun isInstanceOfType() {
+        open class TestType
+
+        class TestSubType : TestType()
+
+        tryAll(
+            {
+                // Instance that is the same type passes.
+                val a = TestType()
+                val result = a isInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the same type passes with type param.
+                val a = TestType()
+                val result = a.isInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the subtype passes.
+                val a = TestSubType()
+                val result = a isInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the subtype passes with type param.
+                val a = TestSubType()
+                val result = a.isInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is not the type fails.
+                val a = Any()
+                val result = a isInstanceOfType TestType::class.java
+                assertTrue(result.isFailure)
+            },
+            {
+                // Instance that is not the type fails with type param.
+                val a = Any()
+                val result = a.isInstanceOfType<TestType>()
+                assertTrue(result.isFailure)
+            },
+            {
+                // null fails.
+                val a = null
+                val result = a isInstanceOfType TestType::class.java
+                assertTrue(result.isFailure)
+            },
+            {
+                // null fails with type param.
+                val a = null
+                val result = a.isInstanceOfType<TestType>()
+                assertTrue(result.isFailure)
+            },
+            {
+                // null fails when stored as type.
+                val a: TestType? = null
+                val result = a isInstanceOfType TestType::class.java
+                assertTrue(result.isFailure)
+            },
+            {
+                // null fails when stored as type with type param.
+                val a: TestType? = null
+                val result = a.isInstanceOfType<TestType>()
+                assertTrue(result.isFailure)
+            },
+        )
+    }
+
+    @Test
+    fun isNullOrInstanceOfType() {
+        open class TestType
+
+        class TestSubType : TestType()
+
+        tryAll(
+            {
+                // Instance that is the same type passes.
+                val a = TestType()
+                val result = a isNullOrInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the same type passes with type param.
+                val a = TestType()
+                val result = a.isNullOrInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the subtype passes.
+                val a = TestSubType()
+                val result = a isNullOrInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is the subtype passes with type param.
+                val a = TestSubType()
+                val result = a.isNullOrInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Instance that is not the type fails.
+                val a = Any()
+                val result = a isNullOrInstanceOfType TestType::class.java
+                assertTrue(result.isFailure)
+            },
+            {
+                // Instance that is not the type fails with type param.
+                val a = Any()
+                val result = a.isNullOrInstanceOfType<TestType>()
+                assertTrue(result.isFailure)
+            },
+            {
+                // null passes.
+                val a = null
+                val result = a isNullOrInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+            {
+                // null passes with type param.
+                val a = null
+                val result = a.isNullOrInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+            {
+                // null passes when stored as type.
+                val a: TestType? = null
+                val result = a isNullOrInstanceOfType TestType::class.java
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+            {
+                // null passes when stored as type with type param.
+                val a: TestType? = null
+                val result = a.isNullOrInstanceOfType<TestType>()
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+        )
+    }
 }

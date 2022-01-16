@@ -186,6 +186,66 @@ fun <T> (()->T).doesNotThrow(): Result<T> {
     }
 }
 
+/**
+ * Validates that a value is an instance of the given type [T]. A success
+ * [Result] is returned containing the value when it is of the given type,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * A null value will always return a failure [Result].
+ *
+ * @receiver Any nullable value.
+ */
+inline fun <reified T> Any?.isInstanceOfType(): Result<T> {
+    return this.isInstanceOfType(T::class.java)
+}
+
+/**
+ * Validates that a value is an instance of the given [type]. A success
+ * [Result] is returned containing the value when it is of the given type,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * A null value will always return a failure [Result].
+ *
+ * @receiver Any nullable value.
+ */
+infix fun <T> Any?.isInstanceOfType(type: Class<T>): Result<T> {
+    return getNonNullResult(this != null && type.isAssignableFrom(this.javaClass)) {
+        "The value '$this' should be an instance of type '$type'."
+    }.map {
+        @Suppress("UNCHECKED_CAST")
+        it as T
+    }
+}
+
+/**
+ * Validates that a value is either null or an instance of the given type [T]. A
+ * success [Result] is returned containing the value when it is null or of the
+ * given type, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * @receiver Any nullable value.
+ */
+inline fun <reified T> Any?.isNullOrInstanceOfType(): Result<T?> {
+    return isNullOrInstanceOfType(T::class.java)
+}
+
+/**
+ * Validates that a value is either null or an instance of the given [type]. A
+ * success [Result] is returned containing the value when it is null or of the
+ * given type, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * @receiver Any nullable value.
+ */
+infix fun <T> Any?.isNullOrInstanceOfType(type: Class<T>): Result<T?> {
+    return getResult(this == null || type.isAssignableFrom(this.javaClass)) {
+        "The value '$this' should be null or an instance of type '$type'."
+    }.map {
+        @Suppress("UNCHECKED_CAST")
+        it as T?
+    }
+}
+
 private inline fun <T> T.getResult(result: Boolean, failureMessage: () -> String): Result<T> {
     return if (result) {
         Result.success(this)
