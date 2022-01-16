@@ -868,4 +868,76 @@ class ValidationsTest {
             }
         )
     }
+
+    @Test
+    fun isInRange() {
+        tryAll(
+            {
+                // Value at start of range is in range.
+                val a = 10
+                val result = a.isInRange(10, 20)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value at start of range is in range with range.
+                val a = 10
+                val result = a isInRange 10..20
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value at end of range is in range.
+                val a = 20
+                val result = a.isInRange(10, 20)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value at end of range is in range with range.
+                val a = 20
+                val result = a isInRange 10..20
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value in middle of range is in range.
+                val a = 15
+                val result = a.isInRange(10, 20)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value in middle of range is in range with range.
+                val a = 15
+                val result = a isInRange 10..20
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Value before range is not in range.
+                val a = 5
+                val result = a.isInRange(10, 20)
+                assertTrue(result.isFailure)
+            },
+            {
+                // Value before range is not in range with range.
+                val a = 5
+                val result = a isInRange 10..20
+                assertTrue(result.isFailure)
+            },
+            {
+                // Value after range is not in range.
+                val a = 25
+                val result = a.isInRange(10, 20)
+                assertTrue(result.isFailure)
+            },
+            {
+                // Value after range is not in range with range.
+                val a = 25
+                val result = a isInRange 10..20
+                assertTrue(result.isFailure)
+            }
+        )
+    }
 }

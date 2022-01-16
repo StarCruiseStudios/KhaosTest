@@ -435,6 +435,33 @@ infix fun String.endsWithCaseInsensitiveSubstring(substring: String): Result<Str
     }
 }
 
+/**
+ * Validates that a value is within the given [range] (inclusive). A success
+ * [Result] is returned containing the value when it is in the range, otherwise
+ * a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any comparable value.
+ */
+infix fun <T: Comparable<T>> T.isInRange(range: ClosedRange<T>): Result<T> {
+    return getResult(range.contains(this)) {
+        "The value '$this' should be in the range [${range.start}, ${range.endInclusive}]."
+    }
+}
+
+/**
+ * Validates that a value is between the given [minInclusive] and
+ * [maxInclusive] values. A success [Result] is returned containing the value
+ * when it is in the range, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any comparable value.
+ */
+fun <T: Comparable<T>> T.isInRange(minInclusive: T, maxInclusive: T): Result<T> {
+    return getResult(this in minInclusive..maxInclusive) {
+        "The value '$this' should be in the range [$minInclusive, $maxInclusive]."
+    }
+}
+
 private inline fun <T> T.getResult(result: Boolean, failureMessage: () -> String): Result<T> {
     return if (result) {
         Result.success(this)

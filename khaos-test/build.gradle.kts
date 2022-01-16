@@ -69,7 +69,6 @@ description = """
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
     implementation("org.slf4j:slf4j-api:1.7.32")
-    implementation( "org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("org.junit.platform:junit-platform-commons:1.8.2")
@@ -83,7 +82,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
     testImplementation("org.junit.platform:junit-platform-console:1.8.2")
-    testImplementation("io.mockk:mockk:1.12.1")
 }
 
 // =============================================================================
