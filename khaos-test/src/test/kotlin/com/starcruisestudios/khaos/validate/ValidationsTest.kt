@@ -461,4 +461,411 @@ class ValidationsTest {
             },
         )
     }
+
+    @Test
+    fun isEmptyString() {
+        tryAll(
+            {
+                // Empty string is empty
+                val a = ""
+                val result = a.isEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Blank string is not empty
+                val a = " "
+                val result = a.isEmptyString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Non-empty string is not empty
+                val a = "Hello"
+                val result = a.isEmptyString()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun isNullOrEmptyString() {
+        tryAll(
+            {
+                // Null is null
+                val result = null.isNullOrEmptyString()
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+            {
+                // Empty string is empty
+                val a = ""
+                val result = a.isNullOrEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Blank string is not empty
+                val a = " "
+                val result = a.isNullOrEmptyString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Non-empty string is not empty
+                val a = "Hello"
+                val result = a.isNullOrEmptyString()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun isNotEmptyString() {
+        tryAll(
+            {
+                // Empty string is not not empty
+                val a = ""
+                val result = a.isNotEmptyString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Blank string is not empty
+                val a = " "
+                val result = a.isNotEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Non-empty string is not empty
+                val a = "Hello"
+                val result = a.isNotEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun isNotNullOrEmptyString() {
+        tryAll(
+            {
+                // Null is not not null
+                val result = null.isNotNullOrEmptyString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Empty string is not not empty
+                val a = ""
+                val result = a.isNotNullOrEmptyString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Blank string is not empty
+                val a = " "
+                val result = a.isNotNullOrEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Non-empty string is not empty
+                val a = "Hello"
+                val result = a.isNotNullOrEmptyString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun isBlankString() {
+        tryAll(
+            {
+                // Empty string is blank
+                val a = ""
+                val result = a.isBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Blank string is blank
+                val a = " "
+                val result = a.isBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Non-empty string is not blank
+                val a = "Hello"
+                val result = a.isBlankString()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun isNullOrBlankString() {
+        tryAll(
+            {
+                // Null is null
+                val result = null.isNullOrBlankString()
+                assertTrue(result.isSuccess)
+                assertNull(result.getOrThrow())
+            },
+            {
+                // Empty string is blank
+                val a = ""
+                val result = a.isNullOrBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Blank string is blank
+                val a = " "
+                val result = a.isNullOrBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Non-empty string is not blank
+                val a = "Hello"
+                val result = a.isNullOrBlankString()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun isNotBlankString() {
+        tryAll(
+            {
+                // Empty string is not not blank
+                val a = ""
+                val result = a.isNotBlankString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Blank string is not not blank
+                val a = " "
+                val result = a.isNotBlankString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Non-empty string is not blank
+                val a = "Hello"
+                val result = a.isNotBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun isNotNullOrBlankString() {
+        tryAll(
+            {
+                // Null is not not null
+                val result = null.isNotNullOrBlankString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Empty string is not not blank
+                val a = ""
+                val result = a.isNotNullOrBlankString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Blank string is not not blank
+                val a = " "
+                val result = a.isNotNullOrBlankString()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Non-empty string is not blank
+                val a = "Hello"
+                val result = a.isNotNullOrBlankString()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun containsSubstring() {
+        tryAll(
+            {
+                // String with substring passes
+                val a = "Hello There"
+                val result = a containsSubstring "The"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // String with substring with different case fails
+                val a = "Hello There"
+                val result = a containsSubstring "the"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a containsSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun containsCaseInsensitiveSubstring() {
+        tryAll(
+            {
+                // String with substring passes
+                val a = "Hello There"
+                val result = a containsCaseInsensitiveSubstring "The"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // String with substring with different case passes
+                val a = "Hello There"
+                val result = a containsCaseInsensitiveSubstring "the"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a containsCaseInsensitiveSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun startsWithSubstring() {
+        tryAll(
+            {
+                // String starting with substring passes
+                val a = "Hello There"
+                val result = a startsWithSubstring "Hello"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+
+                // String starting with substring with different case fails
+                val a = "Hello There"
+                val result = a startsWithSubstring "hello"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String with substring in middle fails
+                val a = "Hello There"
+                val result = a startsWithSubstring "The"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a startsWithSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun startsWithCaseInsensitiveSubstring() {
+        tryAll(
+            {
+                // String starting with substring passes
+                val a = "Hello There"
+                val result = a startsWithCaseInsensitiveSubstring "Hello"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+
+                // String starting with substring with different case passes
+                val a = "Hello There"
+                val result = a startsWithCaseInsensitiveSubstring "hello"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // String with substring in middle fails
+                val a = "Hello There"
+                val result = a startsWithCaseInsensitiveSubstring "The"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a startsWithCaseInsensitiveSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun endsWithSubstring() {
+        tryAll(
+            {
+                // String ending with substring passes
+                val a = "Hello There"
+                val result = a endsWithSubstring "There"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+
+                // String ending with substring with different case fails
+                val a = "Hello There"
+                val result = a endsWithSubstring "there"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String with substring in middle fails
+                val a = "Hello There"
+                val result = a endsWithSubstring "The"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a endsWithSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun endsWithCaseInsensitiveSubstring() {
+        tryAll(
+            {
+                // String ending with substring passes
+                val a = "Hello There"
+                val result = a endsWithCaseInsensitiveSubstring "There"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+
+                // String ending with substring with different case passes
+                val a = "Hello There"
+                val result = a endsWithCaseInsensitiveSubstring "there"
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // String with substring in middle fails
+                val a = "Hello There"
+                val result = a endsWithCaseInsensitiveSubstring "The"
+                assertTrue(result.isFailure)
+            },
+            {
+                // String without substring fails
+                val a = "Hello There"
+                val result = a endsWithCaseInsensitiveSubstring "goodbye"
+                assertTrue(result.isFailure)
+            }
+        )
+    }
 }

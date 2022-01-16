@@ -246,6 +246,195 @@ infix fun <T> Any?.isNullOrInstanceOfType(type: Class<T>): Result<T?> {
     }
 }
 
+/**
+ * Validates that a string is an empty string. A success [Result] is returned
+ * containing the value when it is empty, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any string to validate.
+ */
+fun String.isEmptyString(): Result<String?> {
+    return getResult(this.isEmpty()) { "The value '$this' should be empty." }
+}
+
+/**
+ * Validates that a string is either null or an empty string. A success [Result]
+ * is returned containing the value when it is null or empty, otherwise a
+ * failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any nullable string to validate.
+ */
+fun String?.isNullOrEmptyString(): Result<String?> {
+    return getResult(this.isNullOrEmpty()) { "The value '$this' should be null or empty." }
+}
+
+/**
+ * Validates that a string is not an empty string. A success [Result] is
+ * returned containing the value when it is not empty, otherwise a failure
+ * [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any string to validate.
+ */
+fun String.isNotEmptyString(): Result<String> {
+    return getResult(!this.isEmpty()) { "The value '$this' should not be empty." }
+}
+
+/**
+ * Validates that a string is neither null nor an empty string. A success
+ * [Result] is returned containing the value when it is not null or empty,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any nullable string to validate.
+ */
+fun String?.isNotNullOrEmptyString(): Result<String> {
+    return getNonNullResult(!this.isNullOrEmpty()) { "The value '$this' should not be null or empty." }
+}
+
+/**
+ * Validates that a string is either empty, or entirely whitespace. A success
+ * [Result] is returned containing the value when it is empty or blank,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any string to validate.
+ */
+fun String.isBlankString(): Result<String?> {
+    return getResult(this.isBlank()) { "The value '$this' should be blank." }
+}
+
+/**
+ * Validates that a string is either null, empty, or entirely whitespace. A
+ * success [Result] is returned containing the value when it is null, empty, or
+ * blank, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * @receiver Any nullable string to validate.
+ */
+fun String?.isNullOrBlankString(): Result<String?> {
+    return getResult(this.isNullOrBlank()) { "The value '$this' should be null or blank." }
+}
+
+/**
+ * Validates that a string is neither empty, nor entirely whitespace. A success
+ * [Result] is returned containing the value when it is not empty or blank,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any string to validate.
+ */
+fun String.isNotBlankString(): Result<String> {
+    return getResult(!this.isBlank()) { "The value '$this' should not be blank." }
+}
+
+/**
+ * Validates that a string is neither null, empty, nor entirely whitespace. A
+ * success [Result] is returned containing the value when it is not null, empty,
+ * or blank, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * @receiver Any nullable string to validate.
+ */
+fun String?.isNotNullOrBlankString(): Result<String> {
+    return getNonNullResult(!this.isNullOrBlank()) { "The value '$this' should not be null or blank." }
+}
+
+/**
+ * Validates that a string contains a given [substring]. A success [Result] is
+ * returned containing the string when it contains the substring, otherwise a
+ * failure [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation performs a case sensitive search.
+ * @see containsCaseInsensitiveSubstring For a case insensitive search.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.containsSubstring(substring: String): Result<String> {
+    return getResult(contains(substring)) {
+        "The string should contain substring '$substring'."
+    }
+}
+
+/**
+ * Validates that a string contains a given case insensitive [substring]. A
+ * success [Result] is returned containing the string when it contains the
+ * substring, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * This validation performs a case insensitive search.
+ * @see containsSubstring For a case sensitive search.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.containsCaseInsensitiveSubstring(substring: String): Result<String> {
+    return getResult(contains(substring, true)) {
+        "The string should contain substring '$substring'."
+    }
+}
+
+/**
+ * Validates that a string starts with a given [substring]. A success [Result]
+ * is returned containing the string when it starts with the substring,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation performs a case sensitive match.
+ * @see startsWithCaseInsensitiveSubstring For a case insensitive match.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.startsWithSubstring(substring: String): Result<String> {
+    return getResult(startsWith(substring)) {
+        "The string should start with substring '$substring'."
+    }
+}
+
+/**
+ * Validates that a string starts with a given case insensitive [substring]. A
+ * success [Result] is returned containing the string when it starts with the
+ * substring, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * This validation performs a case insensitive match.
+ * @see startsWithSubstring For a case sensitive match.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.startsWithCaseInsensitiveSubstring(substring: String): Result<String> {
+    return getResult(startsWith(substring, true)) {
+        "The string should start with substring '$substring'."
+    }
+}
+
+/**
+ * Validates that a string ends with a given [substring]. A success [Result] is
+ * returned containing the string when it ends with the substring, otherwise a
+ * failure [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation performs a case sensitive match.
+ * @see endsWithCaseInsensitiveSubstring For a case insensitive match.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.endsWithSubstring(substring: String): Result<String> {
+    return getResult(endsWith(substring)) {
+        "The string should end with substring '$substring'."
+    }
+}
+
+/**
+ * Validates that a string ends with a given case insensitive [substring]. A
+ * success [Result] is returned containing the string when it ends with the
+ * substring, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
+ *
+ * This validation performs a case insensitive match.
+ * @see endsWithSubstring For a case sensitive match.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.endsWithCaseInsensitiveSubstring(substring: String): Result<String> {
+    return getResult(endsWith(substring, true)) {
+        "The string should end with substring '$substring'."
+    }
+}
+
 private inline fun <T> T.getResult(result: Boolean, failureMessage: () -> String): Result<T> {
     return if (result) {
         Result.success(this)
