@@ -9,7 +9,7 @@ package com.starcruisestudios.khaos.test.exceptions
 /**
  * An exception that can be thrown in a test to verify a test action occurred.
  *
- * A test [message] is provided to add context to the exception thrown and an
+ * A test [message] can be provided to add context to the exception thrown and an
  * optional [cause] can be specified.
  *
  * A [TestException] should never be thrown from non-test code. Because of this,
@@ -18,7 +18,7 @@ package com.starcruisestudios.khaos.test.exceptions
  *
  * @sample com.starcruisestudios.khaos.test.exceptions.TestExceptionTest.example_catchTestException
  */
-class TestException(message: String, cause: Throwable? = null) : Exception(message, cause) {
+class TestException(message: String? = null, cause: Throwable? = null) : Exception(message, cause) {
     /**
      * Gets a value indicating whether this exception was handled.
      *

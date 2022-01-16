@@ -16,7 +16,11 @@ language.
 
 This package provides Exception types for use in various test situations.
 
+# Package com.starcruisestudios.khaos.test.verification
+
+This package provides test verification methods used to assert test results.
+
 # Package com.starcruisestudios.khaos.validate
 
-This package provides validation extention methods used to check various 
+This package provides validation extention methods used to check specific
 conditions.
