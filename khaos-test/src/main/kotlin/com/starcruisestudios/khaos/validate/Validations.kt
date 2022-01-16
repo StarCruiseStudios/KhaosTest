@@ -462,6 +462,142 @@ fun <T: Comparable<T>> T.isInRange(minInclusive: T, maxInclusive: T): Result<T> 
     }
 }
 
+/**
+ * Validates that an iterable collection is empty. A success [Result] is
+ * returned containing the collection when it is empty, otherwise a failure
+ * [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation is performed greedily, and will not iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+fun <T> Iterable<T>.isEmptyCollection(): Result<Iterable<T>> {
+    return getResult(!this.any()) { "The collection should be empty. Found ${this.count()} elements." }
+}
+
+/**
+ * Validates that an iterable collection is not empty. A success [Result] is
+ * returned containing the collection when it is not empty, otherwise a failure
+ * [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation is performed greedily, and will not iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+fun <T> Iterable<T>.isNotEmptyCollection(): Result<Iterable<T>> {
+    return getResult(this.any()) { "The collection should not be empty." }
+}
+
+/**
+ * Validates that an iterable collection has the given [expectedSize]. A success
+ * [Result] is returned containing the collection when it has the given size,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation is performed non-greedily, and will iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+infix fun <T> Iterable<T>.hasSizeOf(expectedSize: Int): Result<Iterable<T>> {
+    val size = this.count()
+    return getResult(size == expectedSize) {
+        "The collection should contain $expectedSize elements. Found $size elements."
+    }
+}
+
+/**
+ * Validates that an iterable collection is at least as large as the given
+ * [expectedSize] (inclusive). A success [Result] is returned containing the
+ * collection when it is at least as large as the given size, otherwise a
+ * failure [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation is performed non-greedily, and will iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+infix fun <T> Iterable<T>.hasSizeOfAtLeast(expectedSize: Int): Result<Iterable<T>> {
+    val size = this.count()
+    return getResult(size >= expectedSize) {
+        "The collection should contain at least $expectedSize elements. Found $size elements."
+    }
+}
+
+/**
+ * Validates that an iterable collection is at most as large as the given
+ * [expectedSize] (inclusive). A success [Result] is returned containing the
+ * collection when it is at most as large as the given size, otherwise a failure
+ * [Result] with an [IllegalStateException] is returned.
+ *
+ * This validation is performed non-greedily, and will iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+infix fun <T> Iterable<T>.hasSizeOfAtMost(expectedSize: Int): Result<Iterable<T>> {
+    val size = this.count()
+    return getResult(size <= expectedSize) {
+        "The collection should contain at most $expectedSize elements. Found $size elements."
+    }
+}
+
+/**
+ * Validates that an iterable collection contains all of the given [elements].
+ * A success [Result] is returned containing the collection when it contains all
+ * of the given elements in any order, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any iterable collection.
+ */
+fun <T> Iterable<T>.containsAllOf(vararg elements: T): Result<Iterable<T>> {
+    return containsAllOf(elements.asIterable())
+}
+
+/**
+ * Validates that an iterable collection contains all of the given [elements].
+ * A success [Result] is returned containing the collection when it contains all
+ * of the given elements in any order, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any iterable collection.
+ */
+infix fun <T> Iterable<T>.containsAllOf(elements: Iterable<T>): Result<Iterable<T>> {
+    return getResult(elements.all(this::contains)) {
+        "The collection should contain elements '${elements.filter { !this.contains(it) } }'."
+    }
+}
+
+/**
+ * Validates that an iterable collection contains any of the given [elements].
+ * A success [Result] is returned containing the collection when it contains at
+ * least one of the given elements, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any iterable collection.
+ */
+fun <T> Iterable<T>.containsAnyOf(vararg elements: T): Result<Iterable<T>> {
+    return containsAnyOf(elements.asIterable())
+}
+
+/**
+ * Validates that an iterable collection contains any of the given [elements].
+ * A success [Result] is returned containing the collection when it contains at
+ * least one of the given elements, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * This validation is performed greedily, and will not iterate the entire
+ * collection.
+ *
+ * @receiver Any iterable collection.
+ */
+infix fun <T> Iterable<T>.containsAnyOf(elements: Iterable<T>): Result<Iterable<T>> {
+    return getResult(elements.any(this::contains)) {
+        "The collection should contain at least one of '$elements'."
+    }
+}
+
 private inline fun <T> T.getResult(result: Boolean, failureMessage: () -> String): Result<T> {
     return if (result) {
         Result.success(this)

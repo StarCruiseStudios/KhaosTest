@@ -940,4 +940,177 @@ class ValidationsTest {
             }
         )
     }
+
+    @Test
+    fun isEmptyCollection() {
+        tryAll(
+            {
+                // Empty collection is empty
+                val a = listOf<Int>()
+                val result = a.isEmptyCollection()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Non-empty collection is not empty
+                val a = listOf(1, 2, 3)
+                val result = a.isEmptyCollection()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun isNotEmptyCollection() {
+        tryAll(
+            {
+                // Empty collection is not not empty
+                val a = listOf<Int>()
+                val result = a.isNotEmptyCollection()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Non-empty collection is not empty
+                val a = listOf(1, 2, 3)
+                val result = a.isNotEmptyCollection()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun hasSizeOf() {
+        tryAll(
+            {
+                // Collection with expected size passes
+                val a = listOf(1, 2, 3)
+                val result = a hasSizeOf 3
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with different size fails
+                val a = listOf(1, 2)
+                val result = a hasSizeOf 3
+                assertTrue(result.isFailure)
+            },
+        )
+    }
+
+    @Test
+    fun hasSizeOfAtLeast() {
+        tryAll(
+            {
+                // Collection with same size passes
+                val a = listOf(1, 2, 3)
+                val result = a hasSizeOfAtLeast 3
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with smaller size fails
+                val a = listOf(1, 2)
+                val result = a hasSizeOfAtLeast 3
+                assertTrue(result.isFailure)
+            },
+            {
+                // Collection with larger size passes
+                val a = listOf(1, 2, 3, 4)
+                val result = a hasSizeOfAtLeast 3
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            }
+        )
+    }
+
+    @Test
+    fun hasSizeOfAtMost() {
+        tryAll(
+            {
+                // Collection with same size passes
+                val a = listOf(1, 2, 3)
+                val result = a hasSizeOfAtMost 3
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with smaller size passes
+                val a = listOf(1, 2)
+                val result = a hasSizeOfAtMost 3
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with larger size fails
+                val a = listOf(1, 2, 3, 4)
+                val result = a hasSizeOfAtMost 3
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun containsAllOf() {
+        tryAll(
+            {
+                // Collection with all elements passes
+                val a = listOf(1, 2, 3)
+                val result = a containsAllOf listOf(1, 2)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with all elements with varargs passes
+                val a = listOf(1, 2, 3)
+                val result = a.containsAllOf(1, 2)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection missing elements fails
+                val a = listOf(1, 2, 3)
+                val result = a containsAllOf listOf(1, 4)
+                assertTrue(result.isFailure)
+            },
+            {
+                // Collection missing elements with varargs fails
+                val a = listOf(1, 2, 3)
+                val result = a.containsAllOf(1, 4)
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
+    fun containsAnyOf() {
+        tryAll(
+            {
+                // Collection with one of the elements passes
+                val a = listOf(1, 2, 3)
+                val result = a containsAnyOf listOf(1, 4)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection with one of the elements with varargs passes
+                val a = listOf(1, 2, 3)
+                val result = a.containsAnyOf(1, 4)
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Collection missing all elements fails
+                val a = listOf(1, 2, 3)
+                val result = a containsAnyOf listOf(4, 5)
+                assertTrue(result.isFailure)
+            },
+            {
+                // Collection missing all elements with varargs fails
+                val a = listOf(1, 2, 3)
+                val result = a.containsAnyOf(4, 5)
+                assertTrue(result.isFailure)
+            }
+        )
+    }
 }
