@@ -121,6 +121,7 @@ tasks.named("build", Task::class.java) {
 
 detekt {
     config = files("../config/detekt/detekt.yml")
+    autoCorrect = true
 }
 
 tasks.dokkaHtml.configure {

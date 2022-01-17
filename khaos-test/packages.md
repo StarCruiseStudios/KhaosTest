@@ -12,6 +12,11 @@ what is occurring in a test and what is going wrong.
 This package provides utilities that extend the functionality of the Kotlin 
 language.
 
+# Package com.starcruisestudios.khaos.test.api
+
+This package provides the API for accessing the functionality of the Khaos Test
+framework.
+
 # Package com.starcruisestudios.khaos.test.exceptions
 
 This package provides Exception types for use in various test situations.
