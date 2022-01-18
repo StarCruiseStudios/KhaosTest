@@ -24,7 +24,7 @@ object KhaosSpecificationDiscoveryEngine : TestDiscoveryEngine {
      * interface.
      */
     override fun discover(discoveryRequest: EngineDiscoveryRequest, parent: TestDescriptor) {
-        // Find all KhaosSpecifications on the classpath.
+        // Discover all KhaosSpecifications on the classpath.
         discoveryRequest.getSelectorsByType(ClassSelector::class.java)
             .map { it.javaClass }
             .filter(KhaosSpecification::class.java::isAssignableFrom)

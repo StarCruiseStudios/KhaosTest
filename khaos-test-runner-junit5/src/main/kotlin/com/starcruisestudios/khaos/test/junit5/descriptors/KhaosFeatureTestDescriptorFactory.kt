@@ -8,7 +8,6 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.junit5.util.childId
 import org.junit.platform.engine.TestDescriptor
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
 
 /**
  * Factory used to construct instances of the [KhaosFeatureTestDescriptor] class.
@@ -31,16 +30,16 @@ internal object KhaosFeatureTestDescriptorFactory {
         )
         featureDescriptor.setParent(parent)
 
-        // Find all scenarios defined by the feature DSL.
+        // Discover all scenarios defined by the feature DSL.
         props.featureSteps.scenarioDefinitions.forEach { (scenarioName, scenarioDefinition) ->
-            // TODO: Define an actual TestDescriptor class.
-            val scenarioDescriptor = object : AbstractTestDescriptor(
-                featureTestId.append("scenario", scenarioName),
+            val scenarioProps = KhaosScenarioProps(
                 scenarioName,
-                null
-            ) {
-                override fun getType(): TestDescriptor.Type = TestDescriptor.Type.TEST
-            }
+                props.featureSteps.setUpEachScenarioSteps,
+                props.featureSteps.cleanUpEachScenarioSteps,
+                scenarioDefinition,
+                featureDescriptor
+            )
+            val scenarioDescriptor = KhaosScenarioTestDescriptorFactory.build(scenarioProps, featureDescriptor)
             featureDescriptor.addChild(scenarioDescriptor)
         }
 

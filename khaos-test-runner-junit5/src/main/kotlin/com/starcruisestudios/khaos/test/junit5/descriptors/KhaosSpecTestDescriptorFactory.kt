@@ -33,7 +33,7 @@ internal object KhaosSpecTestDescriptorFactory {
             specificationTestId)
         specDescriptor.setParent(parent)
 
-        // Find all properties that return the FeatureDefinition.
+        // Discover all properties that return the FeatureDefinition.
         props.specificationInstance::class.memberProperties
             .filter { it.returnType == FeatureDefinition::class.createType() }
             .forEach { feature ->
