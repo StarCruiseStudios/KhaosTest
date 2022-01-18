@@ -90,7 +90,7 @@ java {
 
 tasks.named("test", Test::class.java) {
     useJUnitPlatform {
-        includeEngines("junit-jupiter", "khaos-test")
+        includeEngines("khaos-test")
     }
     testLogging {
         events("passed", "skipped", "failed")
