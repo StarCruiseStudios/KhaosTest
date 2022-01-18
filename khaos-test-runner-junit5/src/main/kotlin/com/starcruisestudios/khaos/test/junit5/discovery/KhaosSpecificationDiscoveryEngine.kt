@@ -4,7 +4,7 @@
  * See LICENSE file in the project root for details.
  */
 
-package com.starcruisestudios.khaos.test.junit5.engine
+package com.starcruisestudios.khaos.test.junit5.discovery
 
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecProps

@@ -7,6 +7,8 @@
 package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.lang.withEach
+import com.starcruisestudios.khaos.test.junit5.discovery.KhaosSpecificationDiscoveryEngine
+import com.starcruisestudios.khaos.test.junit5.discovery.TestDiscoveryEngine
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor

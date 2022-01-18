@@ -4,7 +4,7 @@
  * See LICENSE file in the project root for details.
  */
 
-package com.starcruisestudios.khaos.test.junit5.engine
+package com.starcruisestudios.khaos.test.junit5.discovery
 
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.TestDescriptor
