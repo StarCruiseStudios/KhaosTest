@@ -120,7 +120,6 @@ tasks.named("test", Test::class.java) {
 
 detekt {
     config = files("../config/detekt/detekt.yml")
-    autoCorrect = true
 }
 
 // =============================================================================

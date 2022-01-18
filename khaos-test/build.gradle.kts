@@ -115,13 +115,8 @@ tasks.named("test", Test::class.java) {
     }
 }
 
-tasks.named("build", Task::class.java) {
-    dependsOn(tasks.named("dokkaHtml"))
-}
-
 detekt {
     config = files("../config/detekt/detekt.yml")
-    autoCorrect = true
 }
 
 tasks.dokkaHtml.configure {
