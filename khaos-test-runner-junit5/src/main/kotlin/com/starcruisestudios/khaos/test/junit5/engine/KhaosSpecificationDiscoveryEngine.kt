@@ -12,6 +12,7 @@ import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescript
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.discovery.ClassSelector
+import kotlin.reflect.full.createInstance
 
 /**
  * Discovery engine that will discover tests on the classpath that extend the
@@ -28,9 +29,21 @@ object KhaosSpecificationDiscoveryEngine : TestDiscoveryEngine {
             .map { it.javaClass }
             .filter(KhaosSpecification::class.java::isAssignableFrom)
             .forEach { javaClass ->
-                val props = KhaosSpecProps(javaClass)
-                val testDescriptor = KhaosSpecTestDescriptorFactory.build(props, parent)
-                parent.addChild(testDescriptor)
+                val specificationInstance = getSpecificationInstance(javaClass)
+                val props = KhaosSpecProps(specificationInstance, javaClass)
+                val specDescriptor = KhaosSpecTestDescriptorFactory.build(props, parent)
+                parent.addChild(specDescriptor)
             }
+    }
+
+    private fun getSpecificationInstance(testClass: Class<*>): KhaosSpecification {
+        // Type that implements KhaosSpecification can be an object or a class,
+        // and needs to be initialized differently depending on which it is.
+        val objectInstance = testClass.kotlin.objectInstance
+        return if (objectInstance != null) {
+            objectInstance as KhaosSpecification
+        } else {
+            testClass.kotlin.createInstance() as KhaosSpecification
+        }
     }
 }

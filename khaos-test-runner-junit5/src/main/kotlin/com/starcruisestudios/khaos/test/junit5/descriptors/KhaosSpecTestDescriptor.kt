@@ -24,7 +24,7 @@ import org.slf4j.Logger
  * @property testLogger The [Logger] instance used to log messages while
  *   executing the specification.
  * @param displayName The name of the test displayed by the test platform.
- * @param uniqueId The unique ID of the described test.
+ * @param uniqueId The unique ID of the specification test.
  */
 internal class KhaosSpecTestDescriptor(
     val specificationClass: Class<*>,

@@ -10,8 +10,7 @@ import com.starcruisestudios.khaos.test.api.FeatureDefinition
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.junit5.util.childId
 import org.junit.platform.engine.TestDescriptor
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
-import kotlin.reflect.full.createInstance
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
 
@@ -26,43 +25,36 @@ internal object KhaosSpecTestDescriptorFactory {
      * instance that is a child of the provided [parent].
      */
     fun build(props: KhaosSpecProps, parent: TestDescriptor): KhaosSpecTestDescriptor {
-        val specificationInstance = getSpecificationInstance(props.testClass)
         val specificationTestId = parent.childId(SPECIFICATION_SEGMENT_TYPE, props.testClass.name)
-
-        val testDescriptor = KhaosSpecTestDescriptor(
+        val specDescriptor = KhaosSpecTestDescriptor(
             props.testClass,
-            specificationInstance.testLogger,
+            props.specificationInstance.testLogger,
             props.testClass.name,
             specificationTestId)
-        testDescriptor.setParent(parent)
+        specDescriptor.setParent(parent)
 
-        // Find all properties that return `FeatureDefinition`s that define
-        // the features of a specification.
-        specificationInstance::class.memberProperties
+        // Find all properties that return the FeatureDefinition.
+        props.specificationInstance::class.memberProperties
             .filter { it.returnType == FeatureDefinition::class.createType() }
             .forEach { feature ->
-                // TODO: Define an actual TestDescriptor class.
-                val childDescriptor = object : AbstractTestDescriptor(
-                    specificationTestId.append("feature", feature.name),
+                val featureSteps = getFeatureDefinition(feature, props)
+                val featureProps = KhaosFeatureProps(
                     feature.name,
-                    null
-                ) {
-                    override fun getType(): TestDescriptor.Type = TestDescriptor.Type.TEST
-                }
-                testDescriptor.addChild(childDescriptor)
+                    featureSteps,
+                    specDescriptor)
+                val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
+                specDescriptor.addChild(featureDescriptor)
             }
 
-        return testDescriptor
+        return specDescriptor
     }
 
-    private fun getSpecificationInstance(testClass: Class<*>): KhaosSpecification {
-        // Type that implements KhaosSpecification can be an object or a class,
-        // and needs to be initialized differently depending on which it is.
-        val objectInstance = testClass.kotlin.objectInstance
-        return if (objectInstance != null) {
-            objectInstance as KhaosSpecification
-        } else {
-            testClass.kotlin.createInstance() as KhaosSpecification
-        }
+    private fun getFeatureDefinition(
+        feature: KProperty1<out KhaosSpecification, *>,
+        props: KhaosSpecProps
+    ): KhaosFeatureStepDefinition {
+        val featureDefinition = feature.getter.call(props.specificationInstance) as FeatureDefinition
+        return KhaosFeatureStepDefinition()
+            .apply(featureDefinition.buildFeature)
     }
 }
