@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescript
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
+import org.slf4j.Logger
 
 /**
  * [KhaosExecutor] implementation that will execute tests described by an
@@ -21,11 +22,27 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
         testDescriptor: KhaosSpecTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
+        if (testDescriptor.children.isEmpty()) {
+            val reason = "Specification ${testDescriptor.displayName} did not contain any features."
+            request.engineExecutionListener.executionSkipped(testDescriptor, reason)
+            return
+        }
+
         request.engineExecutionListener.executionStarted(testDescriptor)
+        testDescriptor.testLogger.printBanner(testDescriptor.displayName)
+
         testDescriptor.children
             .forEach { childDescriptor: TestDescriptor ->
                 executor.execute(request, childDescriptor)
             }
         request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+    }
+
+    private fun Logger.printBanner(displayName: String) {
+        info("********************************************************************************")
+        info("*")
+        info("*   SPECIFICATION: $displayName")
+        info("*")
+        info("********************************************************************************")
     }
 }

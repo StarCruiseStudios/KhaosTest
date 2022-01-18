@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescr
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
+import org.slf4j.Logger
 
 /**
  * [KhaosExecutor] implementation that will execute tests described by an
@@ -21,11 +22,30 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         testDescriptor: KhaosFeatureTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
+        if (testDescriptor.children.isEmpty()) {
+            val reason = "Feature ${testDescriptor.displayName} did not contain any scenarios."
+            request.engineExecutionListener.executionSkipped(testDescriptor, reason)
+            return
+        }
+
         request.engineExecutionListener.executionStarted(testDescriptor)
+        testDescriptor.testLogger.printBanner(testDescriptor.displayName)
+
+        // TODO: Execute feature set up steps.
+
         testDescriptor.children
             .forEach { childDescriptor: TestDescriptor ->
                 executor.execute(request, childDescriptor)
             }
+
+        // TODO: Execute feature clean up steps.
+
         request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+    }
+
+    private fun Logger.printBanner(displayName: String) {
+        info("============================================================")
+        info("|| FEATURE: $displayName")
+        info("============================================================")
     }
 }

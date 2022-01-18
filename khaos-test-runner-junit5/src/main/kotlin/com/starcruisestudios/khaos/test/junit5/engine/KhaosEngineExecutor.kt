@@ -21,6 +21,12 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
         testDescriptor: EngineDescriptor,
         executor: KhaosExecutorCollection
     ) {
+        if (testDescriptor.children.isEmpty()) {
+            val reason = "No test specifications found."
+            request.engineExecutionListener.executionSkipped(testDescriptor, reason)
+            return
+        }
+
         request.engineExecutionListener.executionStarted(testDescriptor)
         testDescriptor.children
             .forEach { childDescriptor: TestDescriptor ->
