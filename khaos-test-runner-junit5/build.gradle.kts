@@ -119,8 +119,8 @@ tasks.named("test", Test::class.java) {
 }
 
 detekt {
-    ignoreFailures = true
     config = files("../config/detekt/detekt.yml")
+    autoCorrect = true
 }
 
 // =============================================================================

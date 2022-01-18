@@ -43,14 +43,28 @@ class KhaosTestEngine : TestEngine {
 
     override fun execute(request: ExecutionRequest) {
         val root = request.rootTestDescriptor
-        // Execute the root descriptor.
-        request.engineExecutionListener.executionStarted(root)
-        root.children
-            .forEach { descriptor: TestDescriptor ->
-                // Execute the child test descriptors.
-                request.engineExecutionListener.executionStarted(descriptor)
-                request.engineExecutionListener.executionFinished(descriptor, TestExecutionResult.successful())
+        execute(request, root)
+    }
+
+    private fun execute(request: ExecutionRequest, testDescriptor: TestDescriptor) {
+        when (testDescriptor.type) {
+            TestDescriptor.Type.CONTAINER -> executeContainer(request, testDescriptor)
+            TestDescriptor.Type.TEST -> executeTest(request, testDescriptor)
+            else -> TODO("This shouldn't happen")
+        }
+    }
+
+    private fun executeContainer(request: ExecutionRequest, testDescriptor: TestDescriptor) {
+        request.engineExecutionListener.executionStarted(testDescriptor)
+        testDescriptor.children
+            .forEach { childDescriptor: TestDescriptor ->
+                execute(request, childDescriptor)
             }
-        request.engineExecutionListener.executionFinished(root, TestExecutionResult.successful())
+        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+    }
+
+    private fun executeTest(request: ExecutionRequest, testDescriptor: TestDescriptor) {
+        request.engineExecutionListener.executionStarted(testDescriptor)
+        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
     }
 }

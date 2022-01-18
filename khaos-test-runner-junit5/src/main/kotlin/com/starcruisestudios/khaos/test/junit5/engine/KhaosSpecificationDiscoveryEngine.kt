@@ -7,21 +7,17 @@
 package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
-import com.starcruisestudios.khaos.test.junit5.util.childId
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecProps
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptorFactory
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.discovery.ClassSelector
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
-import org.junit.platform.engine.support.descriptor.ClassSource
 
 /**
  * Discovery engine that will discover tests on the classpath that extend the
  * [KhaosSpecification] interface.
  */
 object KhaosSpecificationDiscoveryEngine : TestDiscoveryEngine {
-
-    private const val SPECIFICATION_SEGMENT_TYPE = "specification"
-
     /**
      * Discovers tests on the classpath that extend the [KhaosSpecification]
      * interface.
@@ -32,15 +28,8 @@ object KhaosSpecificationDiscoveryEngine : TestDiscoveryEngine {
             .map { it.javaClass }
             .filter(KhaosSpecification::class.java::isAssignableFrom)
             .forEach { javaClass ->
-                // TODO: Define an actual TestDescriptor class.
-                val testDescriptor = object : AbstractTestDescriptor(
-                    parent.childId(SPECIFICATION_SEGMENT_TYPE, javaClass.name),
-                    javaClass.simpleName,
-                    ClassSource.from(javaClass)
-                ) {
-                    override fun getType(): TestDescriptor.Type  = TestDescriptor.Type.TEST
-                }
-
+                val props = KhaosSpecProps(javaClass)
+                val testDescriptor = KhaosSpecTestDescriptorFactory.build(props, parent)
                 parent.addChild(testDescriptor)
             }
     }

@@ -70,4 +70,72 @@ class DiscoveryAndExecutionTests {
                 .skipped(0)
         }
     }
+
+    @Test
+    fun `Feature properties are discovered`() {
+        // Given
+        // * A test specification that contains Features
+        class TestSpecification : KhaosSpecification {
+            val `Test Feature` = Feature {
+                Scenario("A test Scenario") {
+                    Then("The test succeeds") { Verify.that(true.isTrue()) }
+                }
+            }
+
+            val `Test Feature2` = Feature {
+                Scenario("A second test Scenario") {
+                    Then("The test succeeds") { Verify.that(true.isTrue()) }
+                }
+            }
+        }
+
+        // When
+        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
+            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
+            .execute()
+            .testEvents()
+
+        // Then
+        testResults.assertStatistics { stats ->
+            stats.started(2)
+                .succeeded(2)
+                .failed(0)
+                .skipped(0)
+        }
+    }
+
+    @Test
+    fun `Non-Feature properties are not discovered`() {
+        // Given
+        // * A test specification that contains Features
+        class TestSpecification : KhaosSpecification {
+            val `Test Feature` = Feature {
+                Scenario("A test Scenario") {
+                    Then("The test succeeds") { Verify.that(true.isTrue()) }
+                }
+            }
+
+            val `Test Non-Feature`: Any = Feature {
+                Scenario("A non-test Scenario") {
+                    Then("The test succeeds") { Verify.that(true.isTrue()) }
+                }
+            }
+
+            val `Not even close` = 10
+        }
+
+        // When
+        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
+            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
+            .execute()
+            .testEvents()
+
+        // Then
+        testResults.assertStatistics { stats ->
+            stats.started(1)
+                .succeeded(1)
+                .failed(0)
+                .skipped(0)
+        }
+    }
 }
