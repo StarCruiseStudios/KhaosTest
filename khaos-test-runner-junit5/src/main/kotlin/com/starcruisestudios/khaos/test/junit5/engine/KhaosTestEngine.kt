@@ -6,14 +6,12 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
-import com.starcruisestudios.khaos.lang.withEach
 import com.starcruisestudios.khaos.test.junit5.discovery.KhaosSpecificationDiscoveryEngine
 import com.starcruisestudios.khaos.test.junit5.discovery.TestDiscoveryEngine
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestEngine
-import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
 
@@ -29,15 +27,23 @@ class KhaosTestEngine : TestEngine {
         const val ID: String = "khaos-test"
     }
 
+    private val executor = KhaosExecutorCollection.build {
+        withExecutor(KhaosEngineExecutor)
+        withExecutor(KhaosSpecExecutor)
+        withExecutor(KhaosFeatureExecutor)
+        withExecutor(KhaosScenarioExecutor)
+    }
+
+    private val discoveryEngines = listOf<TestDiscoveryEngine>(
+        KhaosSpecificationDiscoveryEngine
+    )
+
     override fun getId() = ID
 
     override fun discover(discoveryRequest: EngineDiscoveryRequest, uniqueId: UniqueId): TestDescriptor {
         val engineDescriptor = EngineDescriptor(uniqueId, "Khaos Test")
-
-        withEach<TestDiscoveryEngine>(
-            KhaosSpecificationDiscoveryEngine
-        ) {
-            discover(discoveryRequest, engineDescriptor)
+        discoveryEngines.forEach {
+            it.discover(discoveryRequest, engineDescriptor)
         }
 
         return engineDescriptor
@@ -45,28 +51,6 @@ class KhaosTestEngine : TestEngine {
 
     override fun execute(request: ExecutionRequest) {
         val root = request.rootTestDescriptor
-        execute(request, root)
-    }
-
-    private fun execute(request: ExecutionRequest, testDescriptor: TestDescriptor) {
-        when (testDescriptor.type) {
-            TestDescriptor.Type.CONTAINER -> executeContainer(request, testDescriptor)
-            TestDescriptor.Type.TEST -> executeTest(request, testDescriptor)
-            else -> TODO("This shouldn't happen")
-        }
-    }
-
-    private fun executeContainer(request: ExecutionRequest, testDescriptor: TestDescriptor) {
-        request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.children
-            .forEach { childDescriptor: TestDescriptor ->
-                execute(request, childDescriptor)
-            }
-        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
-    }
-
-    private fun executeTest(request: ExecutionRequest, testDescriptor: TestDescriptor) {
-        request.engineExecutionListener.executionStarted(testDescriptor)
-        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+        executor.execute(request, root)
     }
 }
