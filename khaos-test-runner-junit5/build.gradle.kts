@@ -112,7 +112,9 @@ java {
 /*  Build Configuration */
 
 tasks.named("test", Test::class.java) {
-    useJUnitPlatform()
+    useJUnitPlatform {useJUnitPlatform {
+        includeEngines("junit-jupiter")
+    }}
     testLogging {
         events("passed", "skipped", "failed")
     }

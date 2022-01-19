@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosScenarioTestDescriptor
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestExecutionResult
@@ -21,17 +22,34 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         testDescriptor: KhaosScenarioTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
+        // TODO: Skip based on tags.
         request.engineExecutionListener.executionStarted(testDescriptor)
         testDescriptor.testLogger.printBanner(testDescriptor.displayName)
 
-        // TODO: Execute the scenario.
+        val result = KhaosStepExecution().execute(
+            testDescriptor.testLogger,
+            testDescriptor.setUp,
+            testDescriptor.cleanUp,
+            testDescriptor.scenarioImplementation)
 
-        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+        testDescriptor.testLogger.printResult(result)
+
+        val testExecutionResult = when (result) {
+            is ScenarioResult.PASSED -> TestExecutionResult.successful()
+            is ScenarioResult.PENDING -> TestExecutionResult.successful() // TODO: pass or fail based on config.
+            is ScenarioResult.ERROR -> TestExecutionResult.failed(result.exception)
+            is ScenarioResult.FAILED -> TestExecutionResult.failed(result.exception)
+        }
+        request.engineExecutionListener.executionFinished(testDescriptor, testExecutionResult)
     }
 
     private fun Logger.printBanner(displayName: String) {
         info("----------------------------------------")
         info("SCENARIO: $displayName")
         info("----------------------------------------")
+    }
+
+    private fun Logger.printResult(result: ScenarioResult) {
+        info("        Scenario Result: $result")
     }
 }

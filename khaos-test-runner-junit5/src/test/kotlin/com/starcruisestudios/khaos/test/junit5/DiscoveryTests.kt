@@ -14,8 +14,9 @@ import com.starcruisestudios.khaos.validate.isTrue
 import org.junit.jupiter.api.Test
 import org.junit.platform.engine.discovery.DiscoverySelectors
 import org.junit.platform.testkit.engine.EngineTestKit
+import org.junit.platform.testkit.engine.Events
 
-class DiscoveryAndExecutionTests {
+class DiscoveryTests {
     @Test
     fun `KhaosSpecification classes are discovered`() {
         // Given
@@ -29,18 +30,10 @@ class DiscoveryAndExecutionTests {
         }
 
         // When
-        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
-            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
-            .execute()
-            .testEvents()
+        val testResults = executeTests(TestSpecification::class.java)
 
         // Then
-        testResults.assertStatistics { stats ->
-            stats.started(1)
-                .succeeded(1)
-                .failed(0)
-                .skipped(0)
-        }
+        testResults.assertStats(numSucceeded = 1)
     }
 
     @Test
@@ -56,19 +49,10 @@ class DiscoveryAndExecutionTests {
         }
 
         // When
-        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
-            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
-            .execute()
-            .testEvents()
+        val testResults = executeTests(TestSpecification::class.java)
 
         // Then
-        testResults.assertStatistics { stats ->
-            stats
-                .started(0)
-                .succeeded(0)
-                .failed(0)
-                .skipped(0)
-        }
+        testResults.assertStats()
     }
 
     @Test
@@ -90,18 +74,10 @@ class DiscoveryAndExecutionTests {
         }
 
         // When
-        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
-            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
-            .execute()
-            .testEvents()
+        val testResults = executeTests(TestSpecification::class.java)
 
         // Then
-        testResults.assertStatistics { stats ->
-            stats.started(2)
-                .succeeded(2)
-                .failed(0)
-                .skipped(0)
-        }
+        testResults.assertStats(numSucceeded = 2)
     }
 
     @Test
@@ -125,17 +101,27 @@ class DiscoveryAndExecutionTests {
         }
 
         // When
-        val testResults = EngineTestKit.engine(KhaosTestEngine.ID)
-            .selectors(DiscoverySelectors.selectClass(TestSpecification::class.java))
-            .execute()
-            .testEvents()
+        val testResults = executeTests(TestSpecification::class.java)
 
         // Then
-        testResults.assertStatistics { stats ->
-            stats.started(1)
-                .succeeded(1)
-                .failed(0)
-                .skipped(0)
+        testResults.assertStats(numSucceeded = 1)
+    }
+
+    private fun executeTests(testClass: Class<*>): Events {
+        return EngineTestKit.engine(KhaosTestEngine.ID)
+            .selectors(DiscoverySelectors.selectClass(testClass))
+            .execute()
+            .testEvents()
+    }
+
+    private fun Events.assertStats(numSucceeded: Long = 0, numFailed: Long = 0, numSkipped: Long = 0) {
+        val numStarted = numSucceeded + numFailed
+        assertStatistics { stats ->
+            stats
+                .started(numStarted)
+                .succeeded(numSucceeded)
+                .failed(numFailed)
+                .skipped(numSkipped)
         }
     }
 }

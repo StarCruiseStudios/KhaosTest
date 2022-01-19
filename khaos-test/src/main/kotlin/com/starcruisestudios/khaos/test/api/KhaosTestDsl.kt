@@ -18,25 +18,34 @@ import org.slf4j.Logger
 /**
  * Enumerates the result statuses that are possible after executing a scenario.
  */
-enum class ScenarioResult {
+sealed class ScenarioResult {
     /** The scenario completed successfully. */
-    PASSED,
+    object PASSED : ScenarioResult() {
+        override fun toString(): String = "PASSED"
+    }
+
 
     /**
      * The scenario failed with an error occurring during a validation test step.
      */
-    FAILED,
+    class FAILED(val exception: Throwable) : ScenarioResult() {
+        override fun toString(): String = "FAILED"
+    }
 
     /**
      * The scenario failed with an unexpected error during a setup, clean up or
      * non validation test step.
      */
-    ERROR,
+    class ERROR(val exception:Throwable) : ScenarioResult() {
+        override fun toString(): String = "ERROR"
+    }
 
     /**
      * The scenario has an incomplete implementation and is pending completion.
      */
-    PENDING
+    object PENDING : ScenarioResult() {
+        override fun toString(): String = "PENDING"
+    }
 }
 
 /**

@@ -22,6 +22,8 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         testDescriptor: KhaosFeatureTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
+        // TODO: Skip based on tags.
+
         if (testDescriptor.children.isEmpty()) {
             val reason = "Feature ${testDescriptor.displayName} did not contain any scenarios."
             request.engineExecutionListener.executionSkipped(testDescriptor, reason)

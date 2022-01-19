@@ -71,7 +71,7 @@ object ExampleSpecification : KhaosSpecification {
 
         (0..10).forEach { index ->
             Scenario("Parameterized Scenario $index") {
-                if (index == 2) {
+                if (index > 10) {
                     Pending()
                 }
 
