@@ -22,6 +22,7 @@ internal object KhaosFeatureTestDescriptorFactory {
     fun build(props: KhaosFeatureProps, parent: TestDescriptor): KhaosFeatureTestDescriptor {
         val featureTestId = parent.childId(FEATURE_SEGMENT_TYPE, props.featureName)
         val featureDescriptor = KhaosFeatureTestDescriptor(
+            props.tags,
             props.featureSteps.setUpFeatureSteps,
             props.featureSteps.cleanUpFeatureSteps,
             props.specDescriptor.testLogger,
@@ -32,11 +33,20 @@ internal object KhaosFeatureTestDescriptorFactory {
 
         // Discover all scenarios defined by the feature DSL.
         props.featureSteps.scenarioDefinitions.forEach { (scenarioName, scenarioDefinition) ->
+
+            val cleanUpSteps = scenarioDefinition.cleanUp.let {
+                if (it == null) {
+                    props.featureSteps.cleanUpEachScenarioSteps
+                } else {
+                    listOf(it) + props.featureSteps.cleanUpEachScenarioSteps
+                }
+            }
+
             val scenarioProps = KhaosScenarioProps(
                 scenarioName,
                 props.featureSteps.setUpEachScenarioSteps,
-                props.featureSteps.cleanUpEachScenarioSteps,
-                scenarioDefinition,
+                cleanUpSteps,
+                scenarioDefinition.definition,
                 featureDescriptor
             )
             val scenarioDescriptor = KhaosScenarioTestDescriptorFactory.build(scenarioProps, featureDescriptor)

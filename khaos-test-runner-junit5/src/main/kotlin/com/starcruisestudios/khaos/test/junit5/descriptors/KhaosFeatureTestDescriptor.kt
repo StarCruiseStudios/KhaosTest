@@ -20,6 +20,7 @@ import org.slf4j.Logger
  * represents a collection of test scenarios all related to a single logical
  * feature.
  *
+ * @property tags A list of tags associated with the feature.
  * @property setUpFeatureSteps A list of steps that should be executed before
  *   all scenarios in a feature. These steps are used to set up the environment
  *   for scenario execution.
@@ -32,6 +33,7 @@ import org.slf4j.Logger
  * @param uniqueId The unique ID of the feature test.
  */
 internal class KhaosFeatureTestDescriptor(
+    val tags: List<String>,
     val setUpFeatureSteps: List<GivenBuilder.() -> Unit>,
     val cleanUpFeatureSteps: List<ThenBuilder.() -> Unit>,
     val testLogger: Logger,

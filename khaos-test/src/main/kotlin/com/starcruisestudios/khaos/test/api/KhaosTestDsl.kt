@@ -4,11 +4,40 @@
  * See LICENSE file in the project root for details.
  */
 
+@file:Suppress("FunctionName")  // "when" is a Kotlin keyword and cannot
+                                        // be used. The capital letters also
+                                        // help these stand out from test
+                                        // specific code.
+
 package com.starcruisestudios.khaos.test.api
 
 import mu.KotlinLogging
 import org.junit.platform.commons.annotation.Testable
 import org.slf4j.Logger
+
+/**
+ * Enumerates the result statuses that are possible after executing a scenario.
+ */
+enum class ScenarioResult {
+    /** The scenario completed successfully. */
+    PASSED,
+
+    /**
+     * The scenario failed with an error occurring during a validation test step.
+     */
+    FAILED,
+
+    /**
+     * The scenario failed with an unexpected error during a setup, clean up or
+     * non validation test step.
+     */
+    ERROR,
+
+    /**
+     * The scenario has an incomplete implementation and is pending completion.
+     */
+    PENDING
+}
 
 /**
  * Marker annotation for [KhaosTestDsl] classes.
@@ -36,10 +65,10 @@ interface KhaosSpecification {
 
 /**
  * Marker class used to define a feature that is discoverable within a test
- * specification, the [buildFeature] block is used to define the
- * feature's behavior.
+ * specification and uses the given [tags], the [buildFeature] block is used to
+ * define the feature's behavior.
  */
-class FeatureDefinition(val buildFeature: FeatureBuilder.() -> Unit)
+class FeatureDefinition(val tags: List<String>, val buildFeature: FeatureBuilder.() -> Unit)
 
 /**
  * [KhaosTestDsl] function used to define a discoverable feature within a
@@ -49,8 +78,8 @@ class FeatureDefinition(val buildFeature: FeatureBuilder.() -> Unit)
  * implements the [KhaosSpecification] interface.
  */
 @KhaosTestDsl
-fun Feature(feature: FeatureBuilder.() -> Unit): FeatureDefinition {
-    return FeatureDefinition(feature)
+fun Feature(vararg tags: String, feature: FeatureBuilder.() -> Unit): FeatureDefinition {
+    return FeatureDefinition(tags.asList(), feature)
 }
 
 /**
@@ -58,13 +87,13 @@ fun Feature(feature: FeatureBuilder.() -> Unit): FeatureDefinition {
  * within a feature.
  */
 @KhaosTestDsl
-interface FeatureBuilder {
+interface FeatureBuilder : ScenarioDefinitionBuilder{
     /**
      * Defines one time set up steps that are executed once at the beginning
      * of the feature before any scenarios.
      *
-     * A failure in this method will cause an [Result.Error] result for the
-     * feature.
+     * A failure in this method will cause an [ScenarioResult.ERROR] result for
+     * the feature.
      */
     fun SetUpFeature(definition: GivenBuilder.() -> Unit)
 
@@ -73,16 +102,16 @@ interface FeatureBuilder {
      * Feature after any Scenarios.
      *
      * These steps will always be executed, even if there is an earlier failure.
-     * A failure in this method will cause an [Result.Error] result for the
-     * feature.
+     * A failure in this method will cause an [ScenarioResult.ERROR] result for
+     * the feature.
      */
     fun CleanUpFeature(definition: ThenBuilder.() -> Unit)
 
     /**
      * Defines set up steps that are executed before each scenario.
      *
-     * A failure in this method will cause an [Result.Error] result for the
-     * scenario.
+     * A failure in this method will cause an [ScenarioResult.ERROR] result for
+     * the scenario.
      */
     fun SetUpEachScenario(definition: GivenBuilder.() -> Unit)
 
@@ -90,19 +119,65 @@ interface FeatureBuilder {
      * Defines clean up steps that are executed after each scenario.
      *
      * These steps will always be executed, even if the scenario fails. A
-     * failure in this method will cause an [Result.Error] result for the
-     * scenario.
+     * failure in this method will cause an [ScenarioResult.ERROR] result for
+     * the scenario.
      */
     fun CleanUpEachScenario(definition: ThenBuilder.() -> Unit)
 
     /**
+     * Defines tags that will be associated with the scenario defined using the
+     * returned [ScenarioDefinitionBuilder].
+     */
+    fun Tagged(vararg tags: String): ScenarioDefinitionBuilder
+}
+
+/**
+ * [KhaosTestDsl] interface used to define a scenario within a feature.
+ */
+@KhaosTestDsl
+interface ScenarioDefinitionBuilder {
+    /**
      * Defines the steps that comprise the Scenario.
      *
-     * A failure in this method will cause a [Result.Failure] result for the
-     * scenario.
+     * A failure in this method will cause a [ScenarioResult.ERROR] or
+     * [ScenarioResult.FAILED] result for the scenario depending on which step
+     * the error occurs in.
      */
-    fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit)
+    fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit): ScenarioCleanUpBuilder
 }
+
+/**
+ * [KhaosTestDsl] interface used to define the steps used to clean up a scenario
+ * after execution.
+ */
+@KhaosTestDsl
+interface ScenarioCleanUpBuilder {
+    /**
+     * Defines clean up steps that are executed after a specific scenario.
+     *
+     * These steps will always be executed, even if the scenario fails. A
+     * failure in this method will cause an [ScenarioResult.ERROR] result for
+     * the scenario.
+     */
+    infix fun CleanUp(definition: ThenBuilder.() -> Unit)
+}
+
+/**
+ * [KhaosTestDsl] interface used to define the DSL scope of a single test step.
+ *
+ * This is a marker interface is used as an implicit receiver for the code block
+ * associated with a test step to prevent the invocation of other step builder
+ * functions inside of a test block.
+ *
+ * For example, this is prevented:
+ * ```kotlin
+ * Given("Some condition.") {
+ *   Then("Some validation.") {}
+ * }
+ * ```
+ */
+@KhaosTestDsl
+interface StepBlock
 
 /**
  * [KhaosTestDsl] interface used to define DSL scopes that define test steps
@@ -124,19 +199,22 @@ interface TestStepBuilder {
 @KhaosTestDsl
 interface GivenBuilder : TestStepBuilder {
     /**
-     * Defines a value that is part of the initial scenario context that will be
-     * operated on. A [description] can be specified to provide more details
-     * about the purpose of a value. The result of the given [value] function is
-     * returned so it can be assigned to a variable.
-     */
-    fun <T> Given(description: String, value: () -> T): T
-
-    /**
      * Defines a state or condition that is part of the initial test context. A
      * [description] can be specified to provide more details about the
      * condition.
      */
     fun Given(description: String)
+
+    /**
+     * Defines a value that is part of the initial scenario context that will be
+     * operated on. A [description] can be specified to provide more details
+     * about the purpose of a value. The result of the given [value] function is
+     * returned so it can be assigned to a variable.
+     *
+     * An exception that is thrown from this step will cause a
+     * [ScenarioResult.ERROR] result for the scenario.
+     */
+    fun <T> Given(description: String, value: StepBlock.() -> T): T
 }
 
 /**
@@ -147,10 +225,20 @@ interface WhenBuilder : TestStepBuilder {
     /**
      * Defines an event that occurs as part of a scenario. This should be an
      * action that is under test. A [description] can be specified to provide
+     * more details about the purpose of an action.
+     */
+    fun When(description: String)
+
+    /**
+     * Defines an event that occurs as part of a scenario. This should be an
+     * action that is under test. A [description] can be specified to provide
      * more details about the purpose of an action. The result of the [action]
      * will also be logged, and is returned so it can be assigned to a variable.
+     *
+     * An exception that is thrown from this step will cause a
+     * [ScenarioResult.ERROR] result for the scenario.
      */
-    fun <T> When(description: String, action: () -> T): T
+    fun <T> When(description: String, action: StepBlock.() -> T): T
 
     /**
      * Defines an event that will occur as a part of a scenario. This should be
@@ -159,15 +247,11 @@ interface WhenBuilder : TestStepBuilder {
      * exception. A [description] is specified to provide more details about
      * the purpose of the action. The [action] provided will be returned so
      * it can be assigned to a variable.
+     *
+     * An exception that is thrown from this step will cause a
+     * [ScenarioResult.ERROR] result for the scenario.
      */
-    fun <T> DeferredWhen(description: String, action:() -> T): () -> T
-
-    /**
-     * Defines an event that occurs as part of a scenario. This should be an
-     * action that is under test. A [description] can be specified to provide
-     * more details about the purpose of an action.
-     */
-    fun When(description: String)
+    fun <T> DeferredWhen(description: String, action:StepBlock.() -> T): () -> T
 }
 
 /**
@@ -179,11 +263,22 @@ interface ThenBuilder : TestStepBuilder {
      * Defines an expected outcome of a scenario. This should be an assertion
      * on a value that is returned from an action under test. A [description]
      * can be specified to provide more details about the purpose of an
+     * assertion.
+     */
+    fun Then(description: String)
+
+    /**
+     * Defines an expected outcome of a scenario. This should be an assertion
+     * on a value that is returned from an action under test. A [description]
+     * can be specified to provide more details about the purpose of an
      * assertion. Whether the assertion passed or failed (threw an exception)
      * will also be logged. The result of the [assertion] is returned so it can
      * be assigned to a variable.
+     *
+     * An exception that is thrown from this step will cause a
+     * [ScenarioResult.FAILED] result for the scenario.
      */
-    fun <T> Then(description: String, assertion: () -> T): T
+    fun <T> Then(description: String, assertion: StepBlock.() -> T): T
 
     /**
      * Defines an expected outcome of a scenario. This should be an assertion
@@ -193,16 +288,11 @@ interface ThenBuilder : TestStepBuilder {
      * description. Whether the assertion passed or failed (threw an exception)
      * will also be logged. The result of the [assertion] is returned so it can
      * be assigned to a variable.
+     *
+     * An exception that is thrown from this step will cause a
+     * [ScenarioResult.FAILED] result for the scenario.
      */
-    fun <T, TEXPECTED> Then(description: String, expectedValue: TEXPECTED, assertion: (TEXPECTED) -> T): T
-
-    /**
-     * Defines an expected outcome of a scenario. This should be an assertion
-     * on a value that is returned from an action under test. A [description]
-     * can be specified to provide more details about the purpose of an
-     * assertion.
-     */
-    fun Then(description: String)
+    fun <T, TEXPECTED> Then(description: String, expectedValue: TEXPECTED, assertion: StepBlock.(TEXPECTED) -> T): T
 }
 
 /**
@@ -212,36 +302,11 @@ interface ThenBuilder : TestStepBuilder {
 @KhaosTestDsl
 interface ScenarioBuilder : GivenBuilder, WhenBuilder, ThenBuilder {
     /**
-     * Defines a clean up [action] that is unique to this scenario.
-     *
-     * This step will always be executed, even if the scenario fails.
-     * A failure in this method will cause an error result for the
-     * scenario.
-     */
-    fun CleanUp(action: () -> Unit)
-
-    /**
      * Indicates that this scenario's implementation is pending completion and
-     * should be skipped.
+     * should be ignored.
      *
-     * Invoking this method will cause a pending result for the
+     * Invoking this method will cause a [ScenarioResult.PENDING] result for the
      * scenario.
      */
     fun Pending()
-
-    /**
-     * Indicates that this scenario does not meet the filter criteria and should
-     * be skipped. The [reason] the test is skipped should be specified and will
-     * be displayed in the test output.
-     *
-     * Invoking this method will cause a skipped result for the scenario.
-     */
-    fun Skip(reason: String)
-
-    /**
-     * Defines the [tags] associated with the test scenario. The scenario will be
-     * skipped if none of the tags associated with the test were specified when
-     * running the tests.
-     */
-    fun Tags(vararg tags: String)
 }

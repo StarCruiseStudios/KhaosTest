@@ -15,6 +15,13 @@ import com.starcruisestudios.khaos.validate.isEqualTo
 import com.starcruisestudios.khaos.validate.isNotEqualTo
 
 object ExampleSpecification : KhaosSpecification {
+    val `Tagged Feature` = Feature("Tag") {
+        Tagged("ScenarioTag")
+            .Scenario("A tagged scenario") {
+                Given("A tagged scenario")
+            }
+    }
+
     val `Test Feature` = Feature {
         SetUpFeature {
             Given("Do this once before") { }
@@ -34,6 +41,14 @@ object ExampleSpecification : KhaosSpecification {
             }
         }
 
+        Tagged(
+            "This is a tag",
+            "and another one",
+            "foo"
+        ).Scenario("A Tagged Test Scenario") {
+            Given("A tagged Scenario")
+        }
+
         Scenario("A Test Scenario") {
 
             Given("Some Value") { 10 }
@@ -42,10 +57,8 @@ object ExampleSpecification : KhaosSpecification {
             Then("Should throw") {
                 Verify.that(action doesThrow TestException::class.java)
             }
-
-            CleanUp {
-                Then("Some cleanup") { }
-            }
+        } CleanUp {
+            Then("Some cleanup")
         }
 
         Scenario("Another Test Scenario") {
@@ -58,11 +71,6 @@ object ExampleSpecification : KhaosSpecification {
 
         (0..10).forEach { index ->
             Scenario("Parameterized Scenario $index") {
-
-                if (index % 6 == 0) {
-                    Skip("This scenario is a multiple of 6.")
-                }
-
                 if (index == 2) {
                     Pending()
                 }

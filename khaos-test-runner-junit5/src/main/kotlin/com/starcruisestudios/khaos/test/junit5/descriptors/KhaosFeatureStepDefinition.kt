@@ -9,6 +9,8 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
 import com.starcruisestudios.khaos.test.api.FeatureBuilder
 import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
+import com.starcruisestudios.khaos.test.api.ScenarioCleanUpBuilder
+import com.starcruisestudios.khaos.test.api.ScenarioDefinitionBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 
 /**
@@ -17,6 +19,11 @@ import com.starcruisestudios.khaos.test.api.ThenBuilder
  * feature.
  */
 internal class KhaosFeatureStepDefinition : FeatureBuilder {
+    /**
+     * A list of tags associated with the feature.
+     */
+    val tags = mutableListOf<String>()
+
     /**
      * Steps that are used to set up a feature.
      */
@@ -40,7 +47,7 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
     /**
      * Step definitions for the scenarios that are a part of the feature.
      */
-    val scenarioDefinitions = mutableMapOf<String, ScenarioBuilder.() -> Unit>()
+    val scenarioDefinitions = mutableMapOf<String, ScenarioProperties>()
 
     override fun SetUpFeature(definition: GivenBuilder.() -> Unit) {
         setUpFeatureSteps.add(definition)
@@ -58,7 +65,34 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
         cleanUpEachScenarioSteps.add(definition)
     }
 
-    override fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit) {
-        scenarioDefinitions[scenarioName] = definition
+    override fun Tagged(vararg tags: String): ScenarioDefinitionBuilder {
+        return TaggedScenarioBuilder(tags.asList())
+    }
+
+    override fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit) : ScenarioCleanUpBuilder {
+        val newScenario = ScenarioProperties(definition)
+        scenarioDefinitions[scenarioName] = newScenario
+        return ScenarioCleanUpBuilderImpl(newScenario)
+    }
+
+    private inner class TaggedScenarioBuilder(private val tags: List<String>) : ScenarioDefinitionBuilder {
+        override fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit): ScenarioCleanUpBuilder {
+            val newScenario = ScenarioProperties(definition, tags = tags)
+            this@KhaosFeatureStepDefinition.scenarioDefinitions[scenarioName] = newScenario
+            return ScenarioCleanUpBuilderImpl(newScenario)
+        }
+    }
+
+    private class ScenarioCleanUpBuilderImpl(private val scenario: ScenarioProperties) : ScenarioCleanUpBuilder {
+        override fun CleanUp(definition: ThenBuilder.() -> Unit) {
+            scenario.cleanUp = definition
+        }
+    }
+
+    internal data class ScenarioProperties(
+        val definition: ScenarioBuilder.() -> Unit,
+        val tags: List<String> = emptyList()
+    ) {
+        var cleanUp: (ThenBuilder.() -> Unit)? = null
     }
 }

@@ -37,9 +37,11 @@ internal object KhaosSpecTestDescriptorFactory {
         props.specificationInstance::class.memberProperties
             .filter { it.returnType == FeatureDefinition::class.createType() }
             .forEach { feature ->
-                val featureSteps = getFeatureDefinition(feature, props)
+                val featureDefinition = feature.getter.call(props.specificationInstance) as FeatureDefinition
+                val featureSteps = KhaosFeatureStepDefinition().apply(featureDefinition.buildFeature)
                 val featureProps = KhaosFeatureProps(
                     feature.name,
+                    featureDefinition.tags,
                     featureSteps,
                     specDescriptor)
                 val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
