@@ -46,15 +46,20 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
     private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
         info("----------------------------------------")
         if (tags.isNotEmpty()) {
+            info("| SCENARIO:")
             tags.forEach {
-                info("  [${it.name}]")
+                info("|   [${it.name}]")
             }
+            info("| $displayName")
+        } else {
+            info("| SCENARIO: $displayName")
         }
-        info("SCENARIO: $displayName")
         info("----------------------------------------")
     }
 
     private fun Logger.printResult(result: ScenarioResult) {
-        info("        Scenario Result: $result")
+        info("----------------------------------------")
+        info("| Scenario Result: $result")
+        info("----------------------------------------")
     }
 }

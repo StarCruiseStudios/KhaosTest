@@ -109,6 +109,54 @@ class KhaosStepExecution : ScenarioBuilder, StepBlock {
         return result
     }
 
+    internal fun executeAsFeature(
+        logger: Logger,
+        setup: List<GivenBuilder.() -> Unit>,
+        cleanup: List<ThenBuilder.() -> Unit>,
+        featureImplementation: () -> Unit
+    ) : ScenarioResult {
+        var result: ScenarioResult = ScenarioResult.PASSED
+        try {
+            if (setup.isNotEmpty()) {
+                try {
+                    Info("------------------------------------------------------------")
+                    Info("| Feature Set Up:")
+                    Info("------------------------------------------------------------")
+                    setup.forEach(::apply)
+                    Info("------------------------------------------------------------")
+                    logSteps(logger)
+                    steps.clear()
+                } catch (ex: Exception) {
+                    result = ScenarioResult.ERROR(ex)
+                }
+
+                if (result != ScenarioResult.PASSED) {
+                    return result
+                }
+            }
+
+            featureImplementation()
+        } finally {
+            if (cleanup.isNotEmpty()) {
+                try {
+                    Info("------------------------------------------------------------")
+                    Info("| Feature Clean Up:")
+                    Info("------------------------------------------------------------")
+                    cleanup.forEach(::apply)
+                    Info("------------------------------------------------------------")
+                    logSteps(logger)
+
+                } catch (ex: Exception) {
+                    // An exception thrown durring cleanup will cause an ERROR
+                    // result.
+                    result = ScenarioResult.ERROR(ex)
+                }
+            }
+        }
+
+        return result
+    }
+
     private fun addStep(
         description: String,
         result: StepResult,

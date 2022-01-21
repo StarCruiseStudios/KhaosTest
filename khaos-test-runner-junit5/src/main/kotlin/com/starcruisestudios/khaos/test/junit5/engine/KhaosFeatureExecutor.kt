@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescriptor
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
@@ -32,26 +33,39 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         request.engineExecutionListener.executionStarted(testDescriptor)
         testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
 
-        // TODO: Execute feature set up steps.
+        testDescriptor.setUpFeatureSteps
+        val result = KhaosStepExecution().executeAsFeature(
+            testDescriptor.testLogger,
+            testDescriptor.setUpFeatureSteps,
+            testDescriptor.cleanUpFeatureSteps
+        ) {
+            testDescriptor.children
+                .forEach { childDescriptor: TestDescriptor ->
+                    executor.execute(request, childDescriptor)
+                }
+        }
 
-        testDescriptor.children
-            .forEach { childDescriptor: TestDescriptor ->
-                executor.execute(request, childDescriptor)
-            }
-
-        // TODO: Execute feature clean up steps.
-
-        request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
+        val testExecutionResult = when (result) {
+            is ScenarioResult.PASSED -> TestExecutionResult.successful()
+            is ScenarioResult.PENDING -> TestExecutionResult.successful() // TODO: pass or fail based on config.
+            is ScenarioResult.ERROR -> TestExecutionResult.failed(result.exception)
+            is ScenarioResult.FAILED -> TestExecutionResult.failed(result.exception)
+        }
+        request.engineExecutionListener.executionFinished(testDescriptor, testExecutionResult)
     }
 
     private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
         info("============================================================")
+
         if (tags.isNotEmpty()) {
+            info("|| FEATURE:")
             tags.forEach {
                 info("||   [${it.name}]")
             }
+            info("|| $displayName")
+        } else {
+            info("|| FEATURE: $displayName")
         }
-        info("|| FEATURE: $displayName")
         info("============================================================")
     }
 }
