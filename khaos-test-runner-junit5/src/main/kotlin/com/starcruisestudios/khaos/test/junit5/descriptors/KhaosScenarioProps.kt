@@ -14,6 +14,7 @@ import com.starcruisestudios.khaos.test.api.ThenBuilder
  * Defines the properties used to describe a test Scenario.
  *
  * @property scenarioName The name of the scenario.
+ * @property tags The tags associated with the scenario.
  * @property setUp The steps used to define the scenario setup.
  * @property cleanUp The steps used to define the scenario cleanup.
  * @property scenarioImplementation The test code that defines the
@@ -23,6 +24,7 @@ import com.starcruisestudios.khaos.test.api.ThenBuilder
  */
 internal data class KhaosScenarioProps(
     val scenarioName: String,
+    val tags: List<String>,
     val setUp: List<GivenBuilder.() -> Unit>,
     val cleanUp: List<ThenBuilder.() -> Unit>,
     val scenarioImplementation: ScenarioBuilder.() -> Unit,

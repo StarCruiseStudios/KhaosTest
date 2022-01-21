@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescr
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
+import org.junit.platform.engine.TestTag
 import org.slf4j.Logger
 
 /**
@@ -22,8 +23,6 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         testDescriptor: KhaosFeatureTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
-        // TODO: Skip based on tags.
-
         if (testDescriptor.children.isEmpty()) {
             val reason = "Feature ${testDescriptor.displayName} did not contain any scenarios."
             request.engineExecutionListener.executionSkipped(testDescriptor, reason)
@@ -31,7 +30,7 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         }
 
         request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.testLogger.printBanner(testDescriptor.displayName)
+        testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
 
         // TODO: Execute feature set up steps.
 
@@ -45,8 +44,13 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
     }
 
-    private fun Logger.printBanner(displayName: String) {
+    private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
         info("============================================================")
+        if (tags.isNotEmpty()) {
+            tags.forEach {
+                info("||   [${it.name}]")
+            }
+        }
         info("|| FEATURE: $displayName")
         info("============================================================")
     }

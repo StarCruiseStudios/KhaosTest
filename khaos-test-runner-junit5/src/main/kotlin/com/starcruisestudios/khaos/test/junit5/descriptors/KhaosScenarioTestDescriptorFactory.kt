@@ -21,7 +21,11 @@ internal object KhaosScenarioTestDescriptorFactory {
      */
     fun build(props: KhaosScenarioProps, parent: TestDescriptor): KhaosScenarioTestDescriptor {
         val scenarioTestId = parent.childId(SCENARIO_SEGMENT_TYPE, props.scenarioName)
+        val tags:MutableList<String> = props.tags.toMutableList()
+        tags.addAll(props.featureDescriptor.tags.map { it.name })
+
         val scenarioDescriptor = KhaosScenarioTestDescriptor(
+            tags,
             props.setUp,
             props.cleanUp,
             props.scenarioImplementation,

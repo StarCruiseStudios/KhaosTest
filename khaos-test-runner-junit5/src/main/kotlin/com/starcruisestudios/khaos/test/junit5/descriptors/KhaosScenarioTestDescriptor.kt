@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 import org.junit.platform.engine.TestDescriptor
+import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
 import org.slf4j.Logger
@@ -20,6 +21,7 @@ import org.slf4j.Logger
  * A scenario is the bottom most element in the khaos test heirarchy, and
  * represents a single complete test case within a feature.
  *
+ * @param tags A list of the tags associated with the scenario.
  * @property setUp A list of steps that should be executed before the scenario.
  *   These steps are used to set up the environment for scenario execution.
  * @property cleanUp A list of steps that should be executed after the
@@ -32,6 +34,7 @@ import org.slf4j.Logger
  * @param uniqueId The unique ID of the scenario test.
  */
 internal class KhaosScenarioTestDescriptor(
+    tags: List<String>,
     val setUp: List<GivenBuilder.() -> Unit>,
     val cleanUp: List<ThenBuilder.() -> Unit>,
     val scenarioImplementation: ScenarioBuilder.() -> Unit,
@@ -39,5 +42,7 @@ internal class KhaosScenarioTestDescriptor(
     displayName: String,
     uniqueId: UniqueId
 ) : AbstractTestDescriptor(uniqueId, displayName, null) {
+    private val tags: Set<TestTag> = tags.map { TestTag.create(it) }.toSet()
     override fun getType(): TestDescriptor.Type = TestDescriptor.Type.TEST
+    override fun getTags() = tags
 }

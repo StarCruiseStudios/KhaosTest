@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosScenarioTestDescriptor
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestExecutionResult
+import org.junit.platform.engine.TestTag
 import org.slf4j.Logger
 
 /**
@@ -22,9 +23,8 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         testDescriptor: KhaosScenarioTestDescriptor,
         executor: KhaosExecutorCollection
     ) {
-        // TODO: Skip based on tags.
         request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.testLogger.printBanner(testDescriptor.displayName)
+        testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
 
         val result = KhaosStepExecution().execute(
             testDescriptor.testLogger,
@@ -43,8 +43,13 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         request.engineExecutionListener.executionFinished(testDescriptor, testExecutionResult)
     }
 
-    private fun Logger.printBanner(displayName: String) {
+    private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
         info("----------------------------------------")
+        if (tags.isNotEmpty()) {
+            tags.forEach {
+                info("  [${it.name}]")
+            }
+        }
         info("SCENARIO: $displayName")
         info("----------------------------------------")
     }

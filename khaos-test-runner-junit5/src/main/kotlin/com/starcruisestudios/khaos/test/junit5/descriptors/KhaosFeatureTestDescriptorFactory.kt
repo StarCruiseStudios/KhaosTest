@@ -44,6 +44,7 @@ internal object KhaosFeatureTestDescriptorFactory {
 
             val scenarioProps = KhaosScenarioProps(
                 scenarioName,
+                scenarioDefinition.tags,
                 props.featureSteps.setUpEachScenarioSteps,
                 cleanUpSteps,
                 scenarioDefinition.definition,

@@ -15,7 +15,7 @@ import com.starcruisestudios.khaos.validate.isEqualTo
 import com.starcruisestudios.khaos.validate.isNotEqualTo
 
 object ExampleSpecification : KhaosSpecification {
-    val `Tagged Feature` = Feature("Tag") {
+    val `Tagged Feature` = Feature("Tag", "Hello") {
         Tagged("ScenarioTag")
             .Scenario("A tagged scenario") {
                 Given("A tagged scenario")
@@ -42,8 +42,9 @@ object ExampleSpecification : KhaosSpecification {
         }
 
         Tagged(
-            "This is a tag",
-            "and another one",
+            "Hello",
+            "ThisIsATag",
+            "andAnotherOne",
             "foo"
         ).Scenario("A Tagged Test Scenario") {
             Given("A tagged Scenario")

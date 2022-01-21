@@ -9,6 +9,7 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
 import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 import org.junit.platform.engine.TestDescriptor
+import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
 import org.slf4j.Logger
@@ -33,12 +34,16 @@ import org.slf4j.Logger
  * @param uniqueId The unique ID of the feature test.
  */
 internal class KhaosFeatureTestDescriptor(
-    val tags: List<String>,
+    tags: List<String>,
     val setUpFeatureSteps: List<GivenBuilder.() -> Unit>,
     val cleanUpFeatureSteps: List<ThenBuilder.() -> Unit>,
     val testLogger: Logger,
     displayName: String,
     uniqueId: UniqueId
 ) : AbstractTestDescriptor(uniqueId, displayName) {
+    private val tags: Set<TestTag> = tags.map { TestTag.create(it) }.toSet()
+
     override fun getType(): TestDescriptor.Type = TestDescriptor.Type.CONTAINER
+
+    override fun getTags() = tags
 }
