@@ -6,8 +6,10 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine.execution
 
+import com.starcruisestudios.khaos.test.api.KhaosWriter
 import com.starcruisestudios.khaos.test.api.StepBlock
-import org.slf4j.Logger
+import com.starcruisestudios.khaos.test.api.StepMessageProps
+import com.starcruisestudios.khaos.test.api.StepResult
 
 /**
  * Aggregates the results of step executions.
@@ -18,31 +20,17 @@ internal class StepExecution : StepBlock {
     private fun addStep(
         description: String,
         result: StepResult,
-        buildStep: (String) -> TestStep,
+        buildStep: (StepMessageProps) -> TestStep,
         expected: Any? = Unit,
         evaluated: Any? = Unit
     ) {
-        val message =  buildString {
-            append(description)
-            if (expected != Unit) {
-                append(" ($expected)")
-            }
-
-            if (evaluated != Unit) {
-                append(" : $evaluated")
-            }
-
-            if (result != StepResult.NONE) {
-                append(" -> $result")
-            }
-        }
-
+        val message =  StepMessageProps(description, result, expected, evaluated)
         steps.add(buildStep(message))
     }
 
     fun <T> executeStep(
         description: String,
-        buildStep: (String) -> TestStep,
+        buildStep: (StepMessageProps) -> TestStep,
         action: StepBlock.() -> T,
         expected: Any? = Unit,
         resultOnException: (Throwable) -> StepResult.FailedStepResult = StepResult::ERROR
@@ -63,7 +51,7 @@ internal class StepExecution : StepBlock {
 
     fun <T> executeDeferredStep(
         description: String,
-        buildStep: (String) -> TestStep,
+        buildStep: (StepMessageProps) -> TestStep,
         action: StepBlock.() -> T
     ): () -> T {
         addStep(description, StepResult.DEFERRED, buildStep)
@@ -72,70 +60,58 @@ internal class StepExecution : StepBlock {
 
     fun executeNoOpStep(
         description: String,
-        buildStep: (String) -> TestStep,
+        buildStep: (StepMessageProps) -> TestStep,
         result: StepResult = StepResult.NONE
     ) {
         addStep(description, result, buildStep)
     }
 
-    fun logSteps(logger: Logger) {
+    fun logSteps(writer: KhaosWriter) {
         var prevStep: TestStep? = null
         steps.forEach {
             when (it) {
                 is TestStep.GivenStep -> {
                     if (prevStep !is TestStep.GivenStep) {
-                        logger.info("Given")
+                        writer.printStepLabel("Given")
                     }
-                    logger.info(" * ${it.message}")
+                    writer.printStep(it.message)
                     prevStep = it
                 }
                 is TestStep.WhenStep -> {
                     if (prevStep !is TestStep.WhenStep) {
-                        logger.info("When")
+                        writer.printStepLabel("When")
                     }
-                    logger.info(" * ${it.message}")
+                    writer.printStep(it.message)
                     prevStep = it
                 }
                 is TestStep.ThenStep -> {
                     if (prevStep !is TestStep.ThenStep) {
-                        logger.info("Then")
+                        writer.printStepLabel("Then")
                     }
-                    logger.info(" * ${it.message}")
+                    writer.printStep(it.message)
                     prevStep = it
                 }
                 is TestStep.LogStep -> {
-                    logger.info(it.message)
+                    writer.printStepMessage(it.message.description)
                 }
                 is TestStep.PendingStep -> {
-                    logger.info("Scenario pending: ${it.message}")
+                    writer.printStepMessage("Scenario pending: ${it.message.description}")
                 }
             }
         }
+
+        writer.printLine()
     }
 
     fun clear() {
         steps.clear()
     }
 
-    internal sealed class StepResult(val name: String) {
-        sealed class FailedStepResult(name: String, val exception: Throwable) : StepResult(name)
-
-        object PASSED : StepResult("PASSED")
-        class FAILED(exception: Throwable) : FailedStepResult("FAILED", exception)
-        class ERROR(exception: Throwable) : FailedStepResult("ERROR", exception)
-        object DEFERRED : StepResult("DEFERRED")
-        object ASSUMED : StepResult("ASSUMED")
-        class PENDING(exception: Throwable) : FailedStepResult("PENDING", exception)
-        object NONE : StepResult("NONE")
-
-        override fun toString(): String = name
-    }
-
-    internal sealed class TestStep(val message: String) {
-        class GivenStep(message: String) : TestStep(message)
-        class WhenStep(message: String) : TestStep(message)
-        class ThenStep(message: String) : TestStep(message)
-        class LogStep(message: String) : TestStep(message)
-        class PendingStep(message: String) : TestStep(message)
+    internal sealed class TestStep(val message: StepMessageProps) {
+        class GivenStep(message: StepMessageProps) : TestStep(message)
+        class WhenStep(message: StepMessageProps) : TestStep(message)
+        class ThenStep(message: StepMessageProps) : TestStep(message)
+        class LogStep(message: StepMessageProps) : TestStep(message)
+        class PendingStep(message: StepMessageProps) : TestStep(message)
     }
 }

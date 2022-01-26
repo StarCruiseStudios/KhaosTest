@@ -25,7 +25,7 @@ internal object KhaosFeatureTestDescriptorFactory {
             props.tags,
             props.featureSteps.setUpFeatureSteps,
             props.featureSteps.cleanUpFeatureSteps,
-            props.specDescriptor.testLogger,
+            props.specDescriptor.writer,
             props.featureName,
             featureTestId
         )

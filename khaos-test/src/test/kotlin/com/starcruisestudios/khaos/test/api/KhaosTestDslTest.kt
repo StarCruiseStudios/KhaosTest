@@ -83,6 +83,6 @@ class KhaosTestDslTest {
         }
 
         val specification = TestSpecification()
-        assertNotNull(specification.testLogger)
+        assertNotNull(specification.writer)
     }
 }

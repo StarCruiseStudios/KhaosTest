@@ -12,39 +12,6 @@ package com.starcruisestudios.khaos.test.api
 
 import mu.KotlinLogging
 import org.junit.platform.commons.annotation.Testable
-import org.slf4j.Logger
-
-/**
- * Enumerates the result statuses that are possible after executing a scenario.
- */
-sealed class ScenarioResult {
-    /** The scenario completed successfully. */
-    object PASSED : ScenarioResult() {
-        override fun toString(): String = "PASSED"
-    }
-
-    /**
-     * The scenario failed with an error occurring during a validation test step.
-     */
-    class FAILED(val exception: Throwable) : ScenarioResult() {
-        override fun toString(): String = "FAILED"
-    }
-
-    /**
-     * The scenario failed with an unexpected error during a setup, clean up or
-     * non validation test step.
-     */
-    class ERROR(val exception:Throwable) : ScenarioResult() {
-        override fun toString(): String = "ERROR"
-    }
-
-    /**
-     * The scenario has an incomplete implementation and is pending completion.
-     */
-    object PENDING : ScenarioResult() {
-        override fun toString(): String = "PENDING"
-    }
-}
 
 /**
  * Marker annotation for [KhaosTestDsl] classes.
@@ -61,21 +28,14 @@ annotation class KhaosTestDsl
 @Testable
 interface KhaosSpecification {
     /**
-     * The [Logger] instance used to log messages and status from this
+     * The [KhaosWriter] instance used to log messages and status from this
      * specification.
      *
      * This property can be overridden to define a custom logger.
      */
-    val testLogger: Logger
-        get() = KotlinLogging.logger(javaClass.name)
+    val writer: KhaosWriter
+        get() = MarkdownKhaosWriter(KhaosSlf4jLogAdapter(KotlinLogging.logger(javaClass.name)))
 }
-
-/**
- * Marker class used to define a feature that is discoverable within a test
- * specification and uses the given [tags], the [buildFeature] block is used to
- * define the feature's behavior.
- */
-class FeatureDefinition(val tags: List<String>, val buildFeature: FeatureBuilder.() -> Unit)
 
 /**
  * [KhaosTestDsl] function used to define a discoverable feature within a

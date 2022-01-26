@@ -12,8 +12,6 @@ import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosFeatureExec
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
-import org.junit.platform.engine.TestTag
-import org.slf4j.Logger
 
 /**
  * [KhaosExecutor] implementation that will execute tests described by an
@@ -32,11 +30,13 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         }
 
         request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
+        testDescriptor.writer.printFeatureBanner(
+            testDescriptor.displayName,
+            testDescriptor.tags.map { it.name })
 
         testDescriptor.setUpFeatureSteps
         val result = KhaosFeatureExecution().execute(
-            testDescriptor.testLogger,
+            testDescriptor.writer,
             testDescriptor.setUpFeatureSteps,
             testDescriptor.cleanUpFeatureSteps
         ) {
@@ -53,20 +53,5 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
             is ScenarioResult.FAILED -> TestExecutionResult.failed(result.exception)
         }
         request.engineExecutionListener.executionFinished(testDescriptor, testExecutionResult)
-    }
-
-    private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
-        info("============================================================")
-
-        if (tags.isNotEmpty()) {
-            info("|| FEATURE:")
-            tags.forEach {
-                info("||   [${it.name}]")
-            }
-            info("|| $displayName")
-        } else {
-            info("|| FEATURE: $displayName")
-        }
-        info("============================================================")
     }
 }

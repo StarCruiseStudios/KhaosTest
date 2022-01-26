@@ -11,8 +11,6 @@ import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosScenarioTestDesc
 import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosScenarioExecution
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestExecutionResult
-import org.junit.platform.engine.TestTag
-import org.slf4j.Logger
 
 /**
  * [KhaosExecutor] implementation that will execute tests described by an
@@ -25,15 +23,17 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         executor: KhaosExecutorCollection
     ) {
         request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
+        testDescriptor.writer.printScenarioBanner(
+            testDescriptor.displayName,
+            testDescriptor.tags.map { it.name })
 
         val result = KhaosScenarioExecution().execute(
-            testDescriptor.testLogger,
+            testDescriptor.writer,
             testDescriptor.setUp,
             testDescriptor.cleanUp,
             testDescriptor.scenarioImplementation)
 
-        testDescriptor.testLogger.printResult(result)
+        testDescriptor.writer.printScenarioResultBanner(result)
 
         val testExecutionResult = when (result) {
             is ScenarioResult.PASSED -> TestExecutionResult.successful()
@@ -42,25 +42,5 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
             is ScenarioResult.FAILED -> TestExecutionResult.failed(result.exception)
         }
         request.engineExecutionListener.executionFinished(testDescriptor, testExecutionResult)
-    }
-
-    private fun Logger.printBanner(displayName: String, tags: Set<TestTag>) {
-        info("----------------------------------------")
-        if (tags.isNotEmpty()) {
-            info("| SCENARIO:")
-            tags.forEach {
-                info("|   [${it.name}]")
-            }
-            info("| $displayName")
-        } else {
-            info("| SCENARIO: $displayName")
-        }
-        info("----------------------------------------")
-    }
-
-    private fun Logger.printResult(result: ScenarioResult) {
-        info("----------------------------------------")
-        info("| Scenario Result: $result")
-        info("----------------------------------------")
     }
 }

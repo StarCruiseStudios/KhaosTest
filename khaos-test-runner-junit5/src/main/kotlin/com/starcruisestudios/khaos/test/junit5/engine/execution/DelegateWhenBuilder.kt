@@ -7,6 +7,7 @@
 package com.starcruisestudios.khaos.test.junit5.engine.execution
 
 import com.starcruisestudios.khaos.test.api.StepBlock
+import com.starcruisestudios.khaos.test.api.StepResult
 import com.starcruisestudios.khaos.test.api.WhenBuilder
 
 /**
@@ -14,7 +15,7 @@ import com.starcruisestudios.khaos.test.api.WhenBuilder
  */
 internal class DelegateWhenBuilder(private val steps: StepExecution) : WhenBuilder {
     override fun When(description: String) {
-        steps.executeNoOpStep(description, StepExecution.TestStep::WhenStep, result = StepExecution.StepResult.ASSUMED)
+        steps.executeNoOpStep(description, StepExecution.TestStep::WhenStep, result = StepResult.ASSUMED)
     }
 
     override fun <T> When(description: String, action: StepBlock.() -> T): T {

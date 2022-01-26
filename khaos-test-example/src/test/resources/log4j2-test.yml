@@ -13,18 +13,31 @@ Configuration:
         Pattern: '%d{HH:mm:ss.SSS} %-5level %logger{1} - %msg%n'
 
     RollingFile:
-      name: 'RollingFileAppender'
-      fileName: '${basePath}/app-info.log'
-      filePattern: '${basePath}/app-info-%d{yyyy-MM-dd}.log'
-      PatternLayout:
-        pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %c{1} - %msg%n"
-      Policies:
-        SizeBasedTriggeringPolicy:
-          size: 10MB
-        TimeBasedTriggeringPolicy:
-          interval: 1
-      DefaultRollOverStrategy:
-        max: 10
+      - name: 'RollingFileAppender'
+        fileName: '${basePath}/app-info.log'
+        filePattern: '${basePath}/app-info-%d{yyyy-MM-dd}.log'
+        PatternLayout:
+          pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %c{1} - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 10MB
+          TimeBasedTriggeringPolicy:
+            interval: 1
+        DefaultRollOverStrategy:
+          max: 10
+
+      - name: 'RollingMarkdownFileAppender'
+        fileName: '${basePath}/app-info.md'
+        filePattern: '${basePath}/app-info-%d{yyyy-MM-dd}.md'
+        PatternLayout:
+          pattern: "%msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 10MB
+          TimeBasedTriggeringPolicy:
+            interval: 1
+        DefaultRollOverStrategy:
+          max: 10
 
   Loggers:
     Root:
@@ -33,3 +46,4 @@ Configuration:
         - ref: 'Console'
           level: 'info'
         - ref: 'RollingFileAppender'
+        - ref: 'RollingMarkdownFileAppender'

@@ -8,12 +8,12 @@ package com.starcruisestudios.khaos.test.junit5.engine.execution
 
 import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
+import com.starcruisestudios.khaos.test.api.KhaosWriter
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.api.StepBlock
 import com.starcruisestudios.khaos.test.api.TestStepBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
-import org.slf4j.Logger
 
 /**
  * This class is used to execute feature steps and aggregate results.
@@ -30,7 +30,7 @@ private constructor(private val steps: StepExecution)
     constructor() : this(StepExecution())
 
     internal fun execute(
-        logger: Logger,
+        logger: KhaosWriter,
         setup: List<GivenStepBuilder.() -> Unit>,
         cleanup: List<ThenStepBuilder.() -> Unit>,
         featureImplementation: () -> Unit
@@ -39,11 +39,8 @@ private constructor(private val steps: StepExecution)
         try {
             if (setup.isNotEmpty()) {
                 try {
-                    Info("------------------------------------------------------------")
-                    Info("| Feature Set Up:")
-                    Info("------------------------------------------------------------")
+                    logger.printFeatureLifecycleBanner("Set Up")
                     setup.forEach(::apply)
-                    Info("------------------------------------------------------------")
                     steps.logSteps(logger)
                     steps.clear()
                 } catch (ex: Exception) {
@@ -59,11 +56,8 @@ private constructor(private val steps: StepExecution)
         } finally {
             if (cleanup.isNotEmpty()) {
                 try {
-                    Info("------------------------------------------------------------")
-                    Info("| Feature Clean Up:")
-                    Info("------------------------------------------------------------")
+                    logger.printFeatureLifecycleBanner("Clean Up")
                     cleanup.forEach(::apply)
-                    Info("------------------------------------------------------------")
                     steps.logSteps(logger)
 
                 } catch (ex: Exception) {

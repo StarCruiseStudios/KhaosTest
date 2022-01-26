@@ -8,13 +8,14 @@ package com.starcruisestudios.khaos.test.junit5.engine.execution
 
 import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.StepBlock
+import com.starcruisestudios.khaos.test.api.StepResult
 
 /**
  * Provides a delegated implementation of the [GivenBuilder] interface.
  */
 internal class DelegateGivenBuilder(private val steps: StepExecution) : GivenBuilder {
     override fun Given(description: String) {
-        steps.executeNoOpStep(description, StepExecution.TestStep::GivenStep, result = StepExecution.StepResult.ASSUMED)
+        steps.executeNoOpStep(description, StepExecution.TestStep::GivenStep, result = StepResult.ASSUMED)
     }
 
     override fun <T> Given(description: String, value: StepBlock.() -> T): T {

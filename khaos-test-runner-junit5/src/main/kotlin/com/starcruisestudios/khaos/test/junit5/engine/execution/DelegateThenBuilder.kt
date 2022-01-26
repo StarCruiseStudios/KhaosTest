@@ -7,6 +7,7 @@
 package com.starcruisestudios.khaos.test.junit5.engine.execution
 
 import com.starcruisestudios.khaos.test.api.StepBlock
+import com.starcruisestudios.khaos.test.api.StepResult
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 
 /**
@@ -14,12 +15,12 @@ import com.starcruisestudios.khaos.test.api.ThenBuilder
  */
 internal class DelegateThenBuilder(private val steps: StepExecution) : ThenBuilder {
     override fun Then(description: String) {
-        steps.executeNoOpStep(description, StepExecution.TestStep::ThenStep, result = StepExecution.StepResult.ASSUMED)
+        steps.executeNoOpStep(description, StepExecution.TestStep::ThenStep, result = StepResult.ASSUMED)
     }
 
     override fun <T> Then(description: String, assertion: StepBlock.() -> T): T {
         return steps.executeStep(description,
-            StepExecution.TestStep::ThenStep, assertion, resultOnException = StepExecution.StepResult::FAILED
+            StepExecution.TestStep::ThenStep, assertion, resultOnException = StepResult::FAILED
         )
     }
 
@@ -33,7 +34,7 @@ internal class DelegateThenBuilder(private val steps: StepExecution) : ThenBuild
             StepExecution.TestStep::ThenStep,
             { assertion(expectedValue) },
             expected = expectedValue,
-            resultOnException = StepExecution.StepResult::FAILED
+            resultOnException = StepResult::FAILED
         )
     }
 }

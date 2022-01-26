@@ -8,15 +8,16 @@ package com.starcruisestudios.khaos.test.junit5.engine.execution
 
 import com.starcruisestudios.khaos.test.api.GivenBuilder
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
+import com.starcruisestudios.khaos.test.api.KhaosWriter
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.api.StepBlock
+import com.starcruisestudios.khaos.test.api.StepResult
 import com.starcruisestudios.khaos.test.api.TestStepBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
 import com.starcruisestudios.khaos.test.api.WhenBuilder
 import com.starcruisestudios.khaos.test.junit5.engine.PendingScenarioException
-import org.slf4j.Logger
 
 /**
  * This class is used to execute scenario steps and aggregate results.
@@ -37,12 +38,12 @@ private constructor(private val steps: StepExecution)
             "This test is not yet completely implemented.",
             StepExecution.TestStep::PendingStep,
             { throw PendingScenarioException() },
-            resultOnException = StepExecution.StepResult::PENDING
+            resultOnException = StepResult::PENDING
         )
     }
 
     internal fun execute(
-        logger: Logger,
+        writer: KhaosWriter,
         setup: List<GivenStepBuilder.() -> Unit>,
         cleanup: List<ThenStepBuilder.() -> Unit>,
         scenarioImplementation: ScenarioBuilder.() -> Unit
@@ -59,7 +60,7 @@ private constructor(private val steps: StepExecution)
         } finally {
             try {
                 cleanup.forEach(::apply)
-                steps.logSteps(logger)
+                steps.logSteps(writer)
             } catch (ex: Exception) {
                 // An exception thrown durring cleanup will cause an ERROR
                 // result.

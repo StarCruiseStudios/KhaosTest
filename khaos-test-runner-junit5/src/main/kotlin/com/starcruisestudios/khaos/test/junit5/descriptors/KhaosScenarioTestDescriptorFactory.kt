@@ -29,7 +29,7 @@ internal object KhaosScenarioTestDescriptorFactory {
             props.setUp,
             props.cleanUp,
             props.scenarioImplementation,
-            props.featureDescriptor.testLogger,
+            props.featureDescriptor.writer,
             props.scenarioName,
             scenarioTestId
         )
