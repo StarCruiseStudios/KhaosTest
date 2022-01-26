@@ -8,6 +8,7 @@ package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescriptor
+import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosFeatureExecution
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
@@ -34,7 +35,7 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
 
         testDescriptor.setUpFeatureSteps
-        val result = KhaosStepExecution().executeAsFeature(
+        val result = KhaosFeatureExecution().execute(
             testDescriptor.testLogger,
             testDescriptor.setUpFeatureSteps,
             testDescriptor.cleanUpFeatureSteps

@@ -8,6 +8,7 @@ package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosScenarioTestDescriptor
+import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosScenarioExecution
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.TestTag
@@ -26,7 +27,7 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         request.engineExecutionListener.executionStarted(testDescriptor)
         testDescriptor.testLogger.printBanner(testDescriptor.displayName, testDescriptor.tags)
 
-        val result = KhaosStepExecution().execute(
+        val result = KhaosScenarioExecution().execute(
             testDescriptor.testLogger,
             testDescriptor.setUp,
             testDescriptor.cleanUp,

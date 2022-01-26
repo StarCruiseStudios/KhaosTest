@@ -6,9 +6,9 @@
 
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
-import com.starcruisestudios.khaos.test.api.GivenBuilder
+import com.starcruisestudios.khaos.test.api.GivenStepBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
-import com.starcruisestudios.khaos.test.api.ThenBuilder
+import com.starcruisestudios.khaos.test.api.ThenStepBuilder
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
@@ -35,8 +35,8 @@ import org.slf4j.Logger
  */
 internal class KhaosScenarioTestDescriptor(
     tags: List<String>,
-    val setUp: List<GivenBuilder.() -> Unit>,
-    val cleanUp: List<ThenBuilder.() -> Unit>,
+    val setUp: List<GivenStepBuilder.() -> Unit>,
+    val cleanUp: List<ThenStepBuilder.() -> Unit>,
     val scenarioImplementation: ScenarioBuilder.() -> Unit,
     val testLogger: Logger,
     displayName: String,

@@ -7,11 +7,11 @@
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.api.FeatureBuilder
-import com.starcruisestudios.khaos.test.api.GivenBuilder
+import com.starcruisestudios.khaos.test.api.GivenStepBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioCleanUpBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioDefinitionBuilder
-import com.starcruisestudios.khaos.test.api.ThenBuilder
+import com.starcruisestudios.khaos.test.api.ThenStepBuilder
 
 /**
  * Internal implementation of the [FeatureBuilder] interface that is used to
@@ -27,41 +27,41 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
     /**
      * Steps that are used to set up a feature.
      */
-    val setUpFeatureSteps = mutableListOf<GivenBuilder.() -> Unit>()
+    val setUpFeatureSteps = mutableListOf<GivenStepBuilder.() -> Unit>()
 
     /**
      * Steps that are used to clean up a feature.
      */
-    val cleanUpFeatureSteps = mutableListOf<ThenBuilder.() -> Unit>()
+    val cleanUpFeatureSteps = mutableListOf<ThenStepBuilder.() -> Unit>()
 
     /**
      * Steps that are used to set up a scenario.
      */
-    val setUpEachScenarioSteps = mutableListOf<GivenBuilder.() -> Unit>()
+    val setUpEachScenarioSteps = mutableListOf<GivenStepBuilder.() -> Unit>()
 
     /**
      * Steps that are used to clean up a scenario.
      */
-    val cleanUpEachScenarioSteps = mutableListOf<ThenBuilder.() -> Unit>()
+    val cleanUpEachScenarioSteps = mutableListOf<ThenStepBuilder.() -> Unit>()
 
     /**
      * Step definitions for the scenarios that are a part of the feature.
      */
     val scenarioDefinitions = mutableMapOf<String, ScenarioProperties>()
 
-    override fun SetUpFeature(definition: GivenBuilder.() -> Unit) {
+    override fun SetUpFeature(definition: GivenStepBuilder.() -> Unit) {
         setUpFeatureSteps.add(definition)
     }
 
-    override fun CleanUpFeature(definition: ThenBuilder.() -> Unit) {
+    override fun CleanUpFeature(definition: ThenStepBuilder.() -> Unit) {
         cleanUpFeatureSteps.add(definition)
     }
 
-    override fun SetUpEachScenario(definition: GivenBuilder.() -> Unit) {
+    override fun SetUpEachScenario(definition: GivenStepBuilder.() -> Unit) {
         setUpEachScenarioSteps.add(definition)
     }
 
-    override fun CleanUpEachScenario(definition: ThenBuilder.() -> Unit) {
+    override fun CleanUpEachScenario(definition: ThenStepBuilder.() -> Unit) {
         cleanUpEachScenarioSteps.add(definition)
     }
 
@@ -84,7 +84,7 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
     }
 
     private class ScenarioCleanUpBuilderImpl(private val scenario: ScenarioProperties) : ScenarioCleanUpBuilder {
-        override fun CleanUp(definition: ThenBuilder.() -> Unit) {
+        override fun CleanUp(definition: ThenStepBuilder.() -> Unit) {
             scenario.cleanUp = definition
         }
     }
@@ -93,6 +93,6 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
         val definition: ScenarioBuilder.() -> Unit,
         val tags: List<String> = emptyList()
     ) {
-        var cleanUp: (ThenBuilder.() -> Unit)? = null
+        var cleanUp: (ThenStepBuilder.() -> Unit)? = null
     }
 }

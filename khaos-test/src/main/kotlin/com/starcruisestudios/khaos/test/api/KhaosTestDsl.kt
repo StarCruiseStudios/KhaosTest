@@ -4,10 +4,9 @@
  * See LICENSE file in the project root for details.
  */
 
-@file:Suppress("FunctionName")  // "when" is a Kotlin keyword and cannot
-                                        // be used. The capital letters also
-                                        // help these stand out from test
-                                        // specific code.
+// "when" is a Kotlin keyword and cannot be used. The capital letters also help
+// these stand out from test specific code.
+@file:Suppress("FunctionName")
 
 package com.starcruisestudios.khaos.test.api
 
@@ -23,7 +22,6 @@ sealed class ScenarioResult {
     object PASSED : ScenarioResult() {
         override fun toString(): String = "PASSED"
     }
-
 
     /**
      * The scenario failed with an error occurring during a validation test step.
@@ -104,7 +102,7 @@ interface FeatureBuilder : ScenarioDefinitionBuilder{
      * A failure in this method will cause an [ScenarioResult.ERROR] result for
      * the feature.
      */
-    fun SetUpFeature(definition: GivenBuilder.() -> Unit)
+    fun SetUpFeature(definition: GivenStepBuilder.() -> Unit)
 
     /**
      * Defines one time clean up steps that are executed at the end of the
@@ -114,7 +112,7 @@ interface FeatureBuilder : ScenarioDefinitionBuilder{
      * A failure in this method will cause an [ScenarioResult.ERROR] result for
      * the feature.
      */
-    fun CleanUpFeature(definition: ThenBuilder.() -> Unit)
+    fun CleanUpFeature(definition: ThenStepBuilder.() -> Unit)
 
     /**
      * Defines set up steps that are executed before each scenario.
@@ -122,7 +120,7 @@ interface FeatureBuilder : ScenarioDefinitionBuilder{
      * A failure in this method will cause an [ScenarioResult.ERROR] result for
      * the scenario.
      */
-    fun SetUpEachScenario(definition: GivenBuilder.() -> Unit)
+    fun SetUpEachScenario(definition: GivenStepBuilder.() -> Unit)
 
     /**
      * Defines clean up steps that are executed after each scenario.
@@ -131,7 +129,7 @@ interface FeatureBuilder : ScenarioDefinitionBuilder{
      * failure in this method will cause an [ScenarioResult.ERROR] result for
      * the scenario.
      */
-    fun CleanUpEachScenario(definition: ThenBuilder.() -> Unit)
+    fun CleanUpEachScenario(definition: ThenStepBuilder.() -> Unit)
 
     /**
      * Defines tags that will be associated with the scenario defined using the
@@ -168,7 +166,7 @@ interface ScenarioCleanUpBuilder {
      * failure in this method will cause an [ScenarioResult.ERROR] result for
      * the scenario.
      */
-    infix fun CleanUp(definition: ThenBuilder.() -> Unit)
+    infix fun CleanUp(definition: ThenStepBuilder.() -> Unit)
 }
 
 /**
@@ -203,10 +201,10 @@ interface TestStepBuilder {
 }
 
 /**
- * [KhaosTestDsl] interface used to define DSL scopes that use Given steps.
+ * Provides an interface for a class that builds Given steps.
  */
 @KhaosTestDsl
-interface GivenBuilder : TestStepBuilder {
+interface GivenBuilder {
     /**
      * Defines a state or condition that is part of the initial test context. A
      * [description] can be specified to provide more details about the
@@ -227,10 +225,10 @@ interface GivenBuilder : TestStepBuilder {
 }
 
 /**
- * [KhaosTestDsl] interface used to define DSL scopes that use When steps.
+ * Provides an interface for a class that builds When steps.
  */
 @KhaosTestDsl
-interface WhenBuilder : TestStepBuilder {
+interface WhenBuilder {
     /**
      * Defines an event that occurs as part of a scenario. This should be an
      * action that is under test. A [description] can be specified to provide
@@ -264,10 +262,10 @@ interface WhenBuilder : TestStepBuilder {
 }
 
 /**
- * KhaosTestDsl interface used to define DSL scopes that use Then steps.
+ * Provides an interface for a class that builds Then steps.
  */
 @KhaosTestDsl
-interface ThenBuilder : TestStepBuilder {
+interface ThenBuilder {
     /**
      * Defines an expected outcome of a scenario. This should be an assertion
      * on a value that is returned from an action under test. A [description]
@@ -305,11 +303,29 @@ interface ThenBuilder : TestStepBuilder {
 }
 
 /**
+ * [KhaosTestDsl] interface used to define DSL scopes that use Given steps.
+ */
+@KhaosTestDsl
+interface GivenStepBuilder : GivenBuilder, TestStepBuilder
+
+/**
+ * [KhaosTestDsl] interface used to define DSL scopes that use When steps.
+ */
+@KhaosTestDsl
+interface WhenStepBuilder : WhenBuilder, TestStepBuilder
+
+/**
+ * [KhaosTestDsl] interface used to define DSL scopes that use Then steps.
+ */
+@KhaosTestDsl
+interface ThenStepBuilder : ThenBuilder, TestStepBuilder
+
+/**
  * [KhaosTestDsl] interface used to define the DSL scope for defining a
  * scenario.
  */
 @KhaosTestDsl
-interface ScenarioBuilder : GivenBuilder, WhenBuilder, ThenBuilder {
+interface ScenarioBuilder : GivenStepBuilder, WhenStepBuilder, ThenStepBuilder {
     /**
      * Indicates that this scenario's implementation is pending completion and
      * should be ignored.
