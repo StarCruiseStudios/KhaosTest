@@ -95,6 +95,10 @@ tasks.named("test", Test::class.java) {
     testLogging {
         events("passed", "skipped", "failed")
     }
+
+    systemProperties(
+        "com.starcruisestudios.khaos.test.failOnPending" to false
+    )
 }
 
 detekt {
