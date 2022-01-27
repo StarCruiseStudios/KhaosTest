@@ -26,14 +26,14 @@ sealed class ScenarioResult {
      * The scenario failed with an unexpected error during a setup, clean up or
      * non validation test step.
      */
-    class ERROR(val exception:Throwable) : ScenarioResult() {
+    class ERROR(val exception: Throwable) : ScenarioResult() {
         override fun toString(): String = "ERROR"
     }
 
     /**
      * The scenario has an incomplete implementation and is pending completion.
      */
-    object PENDING : ScenarioResult() {
+    class PENDING(val exception: Throwable) : ScenarioResult() {
         override fun toString(): String = "PENDING"
     }
 }

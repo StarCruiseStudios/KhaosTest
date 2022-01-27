@@ -288,10 +288,10 @@ interface ThenStepBuilder : ThenBuilder, TestStepBuilder
 interface ScenarioBuilder : GivenStepBuilder, WhenStepBuilder, ThenStepBuilder {
     /**
      * Indicates that this scenario's implementation is pending completion and
-     * should be ignored.
+     * should be ignored for the given [reason].
      *
      * Invoking this method will cause a [ScenarioResult.PENDING] result for the
      * scenario.
      */
-    fun Pending()
+    fun Pending(reason: String)
 }

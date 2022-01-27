@@ -14,6 +14,7 @@ import com.starcruisestudios.khaos.test.api.StepBlock
 import com.starcruisestudios.khaos.test.api.TestStepBuilder
 import com.starcruisestudios.khaos.test.api.ThenBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
+import com.starcruisestudios.khaos.test.junit5.engine.PendingScenarioException
 
 /**
  * This class is used to execute feature steps and aggregate results.
@@ -43,6 +44,8 @@ private constructor(private val steps: StepExecution)
                     setup.forEach(::apply)
                     steps.logSteps(logger)
                     steps.clear()
+                } catch (pe: PendingScenarioException) {
+                    result = ScenarioResult.PENDING(pe)
                 } catch (ex: Exception) {
                     result = ScenarioResult.ERROR(ex)
                 }
@@ -59,7 +62,6 @@ private constructor(private val steps: StepExecution)
                     logger.printFeatureLifecycleBanner("Clean Up")
                     cleanup.forEach(::apply)
                     steps.logSteps(logger)
-
                 } catch (ex: Exception) {
                     // An exception thrown durring cleanup will cause an ERROR
                     // result.

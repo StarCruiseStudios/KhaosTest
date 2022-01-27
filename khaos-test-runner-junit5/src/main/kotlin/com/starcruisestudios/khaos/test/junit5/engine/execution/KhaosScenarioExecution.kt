@@ -33,11 +33,11 @@ private constructor(private val steps: StepExecution)
 {
     constructor() : this(StepExecution())
 
-    override fun Pending() {
+    override fun Pending(reason: String) {
         steps.executeStep(
             "This test is not yet completely implemented.",
             StepExecution.TestStep::PendingStep,
-            { throw PendingScenarioException() },
+            { throw PendingScenarioException(reason) },
             resultOnException = StepResult::PENDING
         )
     }
@@ -52,6 +52,8 @@ private constructor(private val steps: StepExecution)
         try {
             setup.forEach(::apply)
             apply(scenarioImplementation)
+        } catch (pe: PendingScenarioException) {
+            result = ScenarioResult.PENDING(pe)
         } catch (ex: Exception) {
             // Result will be overridden in the finally block if the exception
             // was thrown from within a test step. If it was not thrown from a

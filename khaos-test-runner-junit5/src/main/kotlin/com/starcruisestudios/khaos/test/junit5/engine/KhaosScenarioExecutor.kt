@@ -37,7 +37,14 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
 
         val testExecutionResult = when (result) {
             is ScenarioResult.PASSED -> TestExecutionResult.successful()
-            is ScenarioResult.PENDING -> TestExecutionResult.successful() // TODO: pass or fail based on config.
+            is ScenarioResult.PENDING -> {
+                val config = request.configurationParameters.khaosParameters()
+                if (config.failOnPending) {
+                    TestExecutionResult.failed(result.exception)
+                } else {
+                    TestExecutionResult.successful()
+                }
+            }
             is ScenarioResult.ERROR -> TestExecutionResult.failed(result.exception)
             is ScenarioResult.FAILED -> TestExecutionResult.failed(result.exception)
         }

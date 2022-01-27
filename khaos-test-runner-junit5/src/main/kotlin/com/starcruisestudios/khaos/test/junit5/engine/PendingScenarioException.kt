@@ -10,4 +10,4 @@ package com.starcruisestudios.khaos.test.junit5.engine
  * Exception that is thrown when a scenario is pending implementation and should
  * be ignored.
  */
-class PendingScenarioException : Exception()
+class PendingScenarioException(message: String) : Exception(message)

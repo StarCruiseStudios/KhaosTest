@@ -16,7 +16,7 @@ class MarkdownKhaosWriter(private val log: KhaosLogAdapter) : KhaosWriter {
         log.info("## SPECIFICATION: $displayName")
         log.info("")
         log.info("----------------------------------------")
-        log.info("")
+        log.info("  ")
     }
 
     override fun printFeatureBanner(displayName: String, tags: Collection<String>) {
@@ -38,12 +38,12 @@ class MarkdownKhaosWriter(private val log: KhaosLogAdapter) : KhaosWriter {
 
     override fun printScenarioResultBanner(result: ScenarioResult) {
         log.info("> Scenario Result: **$result**")
-        log.info("")
+        log.info("  ")
     }
 
     override fun printStepLabel(stepLabel: String) {
         log.info("")
-        log.info("**$stepLabel:**")
+        log.info("**$stepLabel:**  ")
     }
 
     override fun printStep(stepMessage: StepMessageProps) {
@@ -63,15 +63,15 @@ class MarkdownKhaosWriter(private val log: KhaosLogAdapter) : KhaosWriter {
             }
         }
 
-        log.info(message)
+        log.info("$message  ")
     }
 
     override fun printStepMessage(stepMessage: String) {
-        log.info(stepMessage)
+        log.info("$stepMessage  ")
     }
 
     override fun printLine() {
-        log.info("")
+        log.info("  ")
     }
 
     private fun printTags(tags: Collection<String>) {
