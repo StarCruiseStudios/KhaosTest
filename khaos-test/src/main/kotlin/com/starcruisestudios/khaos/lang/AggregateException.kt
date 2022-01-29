@@ -13,26 +13,24 @@ import org.apache.commons.lang3.exception.ExceptionUtils
  *
  * This is used to allow multiple events to be executed, even if one of them
  * throws an exception. This should capture all of the thrown exceptions which
- * would need to be iterated over and handled individually. The provided
- * [message] should indicate the context in which the events were executed.
+ * would need to be iterated over and handled individually. An
+ * [ExceptionAggregator] should be used to construct an [AggregateException]
+ * instance.
  */
-class AggregateException(message: String, val exceptions: Iterable<Throwable>) :
-    Exception(buildMessage(message, exceptions)) {
+class AggregateException internal constructor(message: String, val exceptions: Iterable<Throwable>) :
+    Exception(buildMessage(message, exceptions))
 
-    companion object {
-        private fun buildMessage(message: String, exceptions: Iterable<Throwable>): String {
-            return sequence {
-                yield(message)
-                var exceptionNumber = 1
-                val exceptionCount = exceptions.count()
+private fun buildMessage(message: String, exceptions: Iterable<Throwable>): String {
+    return sequence {
+        yield(message)
+        var exceptionNumber = 1
+        val exceptionCount = exceptions.count()
 
-                exceptions.map {
-                    val stackTrace = ExceptionUtils.getStackTrace(it)
-                    "Aggregated Exception (${exceptionNumber++}/$exceptionCount):\n$stackTrace"
-                }.forEach { yield(it) }
+        exceptions.map {
+            val stackTrace = ExceptionUtils.getStackTrace(it)
+            "Aggregated Exception (${exceptionNumber++}/$exceptionCount):\n$stackTrace"
+        }.forEach { yield(it) }
 
-                yield("End Aggregated Exception")
-            }.joinToString("\n")
-        }
-    }
+        yield("End Aggregated Exception")
+    }.joinToString("\n")
 }

@@ -48,7 +48,8 @@ interface KhaosSpecification {
 
 /**
  * [KhaosTestDsl] function used to define a discoverable feature within a
- * specification. The [feature] block is used to define the feature.
+ * specification. The [feature] block is used to define the feature. An optional
+ * list of [tags] can be applied to the feature and its scenarios.
  *
  * This function should be used for the value of a propety in a class that
  * implements the [KhaosSpecification] interface.
