@@ -58,7 +58,7 @@ repositories {
 /*  Project Properties */
 
 group = "com.starcruisestudios"
-version = "0.0.2"
+version = "0.0.3"
 description = """
     Project Name: ${rootProject.name}
 """.trimIndent()
@@ -68,7 +68,7 @@ description = """
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    implementation("org.slf4j:slf4j-api:1.7.33")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("org.junit.platform:junit-platform-commons:1.8.2")

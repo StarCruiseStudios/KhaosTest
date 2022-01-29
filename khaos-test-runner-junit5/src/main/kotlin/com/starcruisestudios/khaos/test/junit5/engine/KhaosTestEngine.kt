@@ -61,10 +61,7 @@ class KhaosTestEngine : TestEngine {
 
         val root = request.rootTestDescriptor
         val rootLogContext = BufferedLogContext(KhaosSlf4jLogAdapter(logger))
-
         executor.execute(request, root, rootLogContext)
-
-        rootLogContext.flush()
 
         val endTime = System.nanoTime()
 

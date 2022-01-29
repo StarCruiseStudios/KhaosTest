@@ -58,7 +58,7 @@ repositories {
 /*  Project Properties */
 
 group = "com.starcruisestudios"
-version = "0.0.2"
+version = "0.0.3"
 description = """
     Project Name: ${rootProject.name}
 """.trimIndent()
@@ -98,6 +98,7 @@ tasks.withType(KotlinCompile::class.java) {
         jvmTarget = javaCompatibilityVersion.toString()
         languageVersion = kotlinVersion
         apiVersion = kotlinVersion
+        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
     sourceCompatibility = javaCompatibilityVersion.toString()
     targetCompatibility = javaCompatibilityVersion.toString()
