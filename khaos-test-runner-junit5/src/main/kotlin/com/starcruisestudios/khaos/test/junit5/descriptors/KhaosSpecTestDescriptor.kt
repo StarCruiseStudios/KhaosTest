@@ -6,7 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
-import com.starcruisestudios.khaos.test.api.KhaosWriter
+import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
@@ -21,14 +21,13 @@ import org.junit.platform.engine.support.descriptor.ClassSource
  * is used.
  *
  * @property specificationClass The type of the specification that is described.
- * @property writer The [KhaosWriter] instance used to log output while
- *   executing the specification.
+ * @property specificationInstance The specification instance that is described.
  * @param displayName The name of the test displayed by the test platform.
  * @param uniqueId The unique ID of the specification test.
  */
 internal class KhaosSpecTestDescriptor(
     val specificationClass: Class<*>,
-    val writer: KhaosWriter,
+    val specificationInstance: KhaosSpecification,
     displayName: String,
     uniqueId: UniqueId
 ) : AbstractTestDescriptor(uniqueId, displayName, ClassSource.from(specificationClass)) {

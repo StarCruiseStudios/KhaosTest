@@ -29,13 +29,18 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         executor: KhaosExecutorCollection
     ) {
         KhaosTestExecutor.executeContainer(request, testDescriptor, emptyContainerMessage) {
-            testDescriptor.writer.printFeatureBanner(
+            val specificationInstance = testDescriptor
+                .specTestDescriptor
+                .specificationInstance
+            val writer = specificationInstance.formatProvider.buildWriter(
+                specificationInstance.logAdapter)
+            writer.printFeatureBanner(
                 testDescriptor.displayName,
                 testDescriptor.tags.map { it.name })
 
             testDescriptor.setUpFeatureSteps
             val result = KhaosFeatureExecution().execute(
-                testDescriptor.writer,
+                writer,
                 testDescriptor.setUpFeatureSteps,
                 testDescriptor.cleanUpFeatureSteps
             ) {

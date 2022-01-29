@@ -7,7 +7,6 @@
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.junit5.util.childId
-import org.junit.platform.engine.TestDescriptor
 
 /**
  * Factory used to construct instances of the [KhaosFeatureTestDescriptor] class.
@@ -19,13 +18,13 @@ internal object KhaosFeatureTestDescriptorFactory {
      * Uses the given [props] to construct a new [KhaosFeatureTestDescriptor]
      * instance that is a child of the provided [parent].
      */
-    fun build(props: KhaosFeatureProps, parent: TestDescriptor): KhaosFeatureTestDescriptor {
+    fun build(props: KhaosFeatureProps, parent: KhaosSpecTestDescriptor): KhaosFeatureTestDescriptor {
         val featureTestId = parent.childId(FEATURE_SEGMENT_TYPE, props.featureName)
         val featureDescriptor = KhaosFeatureTestDescriptor(
             props.tags,
             props.featureSteps.setUpFeatureSteps,
             props.featureSteps.cleanUpFeatureSteps,
-            props.specDescriptor.writer,
+            parent,
             props.featureName,
             featureTestId
         )
@@ -47,8 +46,7 @@ internal object KhaosFeatureTestDescriptorFactory {
                 scenarioDefinition.tags,
                 props.featureSteps.setUpEachScenarioSteps,
                 cleanUpSteps,
-                scenarioDefinition.definition,
-                featureDescriptor
+                scenarioDefinition.definition
             )
             val scenarioDescriptor = KhaosScenarioTestDescriptorFactory.build(scenarioProps, featureDescriptor)
             featureDescriptor.addChild(scenarioDescriptor)

@@ -19,14 +19,11 @@ import com.starcruisestudios.khaos.test.api.ThenStepBuilder
  * @property cleanUp The steps used to define the scenario cleanup.
  * @property scenarioImplementation The test code that defines the
  *   implementation of the test scenario.
- * @property featureDescriptor The test descriptor of the feature this scenario
- *   is associated with.
  */
 internal data class KhaosScenarioProps(
     val scenarioName: String,
     val tags: List<String>,
     val setUp: List<GivenStepBuilder.() -> Unit>,
     val cleanUp: List<ThenStepBuilder.() -> Unit>,
-    val scenarioImplementation: ScenarioBuilder.() -> Unit,
-    val featureDescriptor: KhaosFeatureTestDescriptor
+    val scenarioImplementation: ScenarioBuilder.() -> Unit
 )

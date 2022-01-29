@@ -13,12 +13,9 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
  * @property tags The tags associated with the feature.
  * @property featureSteps The steps used to define the behavior of the feature
  *   and its scenarios.
- * @property specDescriptor The test descriptor of the specification this
- *   feature is associated with.
  */
 internal data class KhaosFeatureProps(
     val featureName: String,
     val tags: List<String>,
-    val featureSteps: KhaosFeatureStepDefinition,
-    val specDescriptor: KhaosSpecTestDescriptor
+    val featureSteps: KhaosFeatureStepDefinition
 )

@@ -7,10 +7,8 @@
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.api.FeatureDefinition
-import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.junit5.util.childId
 import org.junit.platform.engine.TestDescriptor
-import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
 
@@ -28,7 +26,7 @@ internal object KhaosSpecTestDescriptorFactory {
         val specificationTestId = parent.childId(SPECIFICATION_SEGMENT_TYPE, props.testClass.name)
         val specDescriptor = KhaosSpecTestDescriptor(
             props.testClass,
-            props.specificationInstance.writer,
+            props.specificationInstance,
             props.testClass.name,
             specificationTestId)
         specDescriptor.setParent(parent)
@@ -42,21 +40,11 @@ internal object KhaosSpecTestDescriptorFactory {
                 val featureProps = KhaosFeatureProps(
                     feature.name,
                     featureDefinition.tags,
-                    featureSteps,
-                    specDescriptor)
+                    featureSteps)
                 val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
                 specDescriptor.addChild(featureDescriptor)
             }
 
         return specDescriptor
-    }
-
-    private fun getFeatureDefinition(
-        feature: KProperty1<out KhaosSpecification, *>,
-        props: KhaosSpecProps
-    ): KhaosFeatureStepDefinition {
-        val featureDefinition = feature.getter.call(props.specificationInstance) as FeatureDefinition
-        return KhaosFeatureStepDefinition()
-            .apply(featureDefinition.buildFeature)
     }
 }

@@ -29,8 +29,11 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
         executor: KhaosExecutorCollection
     ) {
         KhaosTestExecutor.executeContainer(request, testDescriptor, emptyContainerMessage) {
+            val specificationInstance = testDescriptor.specificationInstance
+            val writer = specificationInstance.formatProvider.buildWriter(
+                specificationInstance.logAdapter)
             coroutineScope {
-                testDescriptor.writer.printSpecBanner(testDescriptor.displayName)
+                writer.printSpecBanner(testDescriptor.displayName)
 
                 testDescriptor.children
                     .forEach { childDescriptor: TestDescriptor ->

@@ -7,7 +7,6 @@
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
-import com.starcruisestudios.khaos.test.api.KhaosWriter
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestTag
@@ -28,8 +27,8 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
  * @property cleanUpFeatureSteps A list of steps that should be executed after
  *   all scenarios in a feature. These steps are used to clean up after scenario
  *   execution.
- * @property writer The [KhaosWriter] instance used to log output
- *   while executing the feature.
+ * @property specTestDescriptor The [KhaosSpecTestDescriptor] instance used to
+ *   define the specification that contains this feature.
  * @param displayName The name of the test displayed by the test platform.
  * @param uniqueId The unique ID of the feature test.
  */
@@ -37,7 +36,7 @@ internal class KhaosFeatureTestDescriptor(
     tags: List<String>,
     val setUpFeatureSteps: List<GivenStepBuilder.() -> Unit>,
     val cleanUpFeatureSteps: List<ThenStepBuilder.() -> Unit>,
-    val writer: KhaosWriter,
+    val specTestDescriptor: KhaosSpecTestDescriptor,
     displayName: String,
     uniqueId: UniqueId
 ) : AbstractTestDescriptor(uniqueId, displayName) {

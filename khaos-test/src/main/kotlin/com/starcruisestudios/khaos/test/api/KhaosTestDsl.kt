@@ -28,13 +28,22 @@ annotation class KhaosTestDsl
 @Testable
 interface KhaosSpecification {
     /**
-     * The [KhaosWriter] instance used to log messages and status from this
+     * The [KhaosLogAdapter] instance used to log messages and status from this
      * specification.
      *
      * This property can be overridden to define a custom logger.
      */
-    val writer: KhaosWriter
-        get() = MarkdownKhaosWriter(KhaosSlf4jLogAdapter(KotlinLogging.logger(javaClass.name)))
+    val logAdapter: KhaosLogAdapter
+        get() = KhaosSlf4jLogAdapter(KotlinLogging.logger(javaClass.name))
+
+    /**
+     * The [KhaosFormatProvider] that provides the format used when logging
+     * messages from this specification.
+     *
+     * This property can be overridden to define a custom format provider.
+     */
+    val formatProvider: KhaosFormatProvider
+        get() = KhaosFormatProviders.MARKDOWN
 }
 
 /**

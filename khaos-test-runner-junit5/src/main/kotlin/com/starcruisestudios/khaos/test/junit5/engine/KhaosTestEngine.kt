@@ -17,6 +17,7 @@ import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestEngine
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
+import java.util.concurrent.TimeUnit
 
 /**
  * A [TestEngine] implementation that facilitates discovery and execution of
@@ -63,6 +64,8 @@ class KhaosTestEngine : TestEngine {
         }
 
         val endTime = System.nanoTime()
-        logger.info { "Total Time: ${endTime - startTime} nanoseconds." }
+
+        val totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime)
+        logger.info { "Total Time: $totalTime ms." }
     }
 }

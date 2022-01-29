@@ -7,7 +7,6 @@
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
-import com.starcruisestudios.khaos.test.api.KhaosWriter
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
 import org.junit.platform.engine.TestDescriptor
@@ -28,8 +27,8 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
  *   scenario. These steps are used to clean up after scenario execution.
  * @property scenarioImplementation The executable code that defines the
  *   scenario's behavior.
- * @property writer The [KhaosWriter] instance used to log output while
- *   executing the scenario.
+ * @property featureTestDescriptor The [KhaosFeatureTestDescriptor] instance
+ *   used to define the feature that contains this scenario.
  * @param displayName The name of the test displayed by the test platform.
  * @param uniqueId The unique ID of the scenario test.
  */
@@ -38,7 +37,7 @@ internal class KhaosScenarioTestDescriptor(
     val setUp: List<GivenStepBuilder.() -> Unit>,
     val cleanUp: List<ThenStepBuilder.() -> Unit>,
     val scenarioImplementation: ScenarioBuilder.() -> Unit,
-    val writer: KhaosWriter,
+    val featureTestDescriptor: KhaosFeatureTestDescriptor,
     displayName: String,
     uniqueId: UniqueId
 ) : AbstractTestDescriptor(uniqueId, displayName, null) {

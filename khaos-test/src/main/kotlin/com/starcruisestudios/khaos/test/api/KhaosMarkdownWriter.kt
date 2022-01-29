@@ -11,7 +11,7 @@ package com.starcruisestudios.khaos.test.api
  *
  * @property log The [KhaosLogAdapter] used to output values.
  */
-class MarkdownKhaosWriter(private val log: KhaosLogAdapter) : KhaosWriter {
+internal class KhaosMarkdownWriter(private val log: KhaosLogAdapter) : KhaosWriter {
     override fun printSpecBanner(displayName: String) {
         log.info("## SPECIFICATION: $displayName")
         log.info("")

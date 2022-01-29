@@ -21,17 +21,23 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
         executor: KhaosExecutorCollection
     ) {
         KhaosTestExecutor.executeTest(request, testDescriptor) {
-            testDescriptor.writer.printScenarioBanner(
+            val specificationInstance = testDescriptor
+                .featureTestDescriptor
+                .specTestDescriptor
+                .specificationInstance
+            val writer = specificationInstance.formatProvider.buildWriter(
+                specificationInstance.logAdapter)
+            writer.printScenarioBanner(
                 testDescriptor.displayName,
                 testDescriptor.tags.map { it.name })
 
             val result = KhaosScenarioExecution().execute(
-                testDescriptor.writer,
+                writer,
                 testDescriptor.setUp,
                 testDescriptor.cleanUp,
                 testDescriptor.scenarioImplementation)
 
-            testDescriptor.writer.printScenarioResultBanner(result)
+            writer.printScenarioResultBanner(result)
             return@executeTest result
         }
     }
