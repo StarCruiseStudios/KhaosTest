@@ -17,7 +17,7 @@ import org.junit.platform.engine.TestExecutionResult
  * [KhaosScenarioTestDescriptor].
  */
 internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescriptor> {
-    override fun executeDescriptor(
+    override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosScenarioTestDescriptor,
         executor: KhaosExecutorCollection

@@ -30,11 +30,11 @@ private constructor(private val steps: StepExecution)
 {
     constructor() : this(StepExecution())
 
-    internal fun execute(
+    internal suspend fun execute(
         logger: KhaosWriter,
         setup: List<GivenStepBuilder.() -> Unit>,
         cleanup: List<ThenStepBuilder.() -> Unit>,
-        featureImplementation: () -> Unit
+        featureImplementation: suspend () -> Unit
     ) : ScenarioResult {
         var result: ScenarioResult = ScenarioResult.PASSED
         try {

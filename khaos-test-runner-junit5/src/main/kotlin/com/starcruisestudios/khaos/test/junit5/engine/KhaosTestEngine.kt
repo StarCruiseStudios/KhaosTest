@@ -8,6 +8,9 @@ package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.junit5.discovery.KhaosSpecificationDiscoveryEngine
 import com.starcruisestudios.khaos.test.junit5.discovery.TestDiscoveryEngine
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
@@ -20,6 +23,8 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor
  * tests using the Khaos Test engine.
  */
 class KhaosTestEngine : TestEngine {
+    private val logger = KotlinLogging.logger(javaClass.name)
+
     companion object {
         /**
          * The Unique ID used to identify the Khaos Test engine.
@@ -49,8 +54,15 @@ class KhaosTestEngine : TestEngine {
         return engineDescriptor
     }
 
-    override fun execute(request: ExecutionRequest) {
+    override fun execute(request: ExecutionRequest) = runBlocking {
+        val startTime = System.nanoTime()
+
         val root = request.rootTestDescriptor
-        executor.execute(request, root)
+        coroutineScope {
+            executor.execute(request, root)
+        }
+
+        val endTime = System.nanoTime()
+        logger.info { "Total Time: ${endTime - startTime} nanoseconds." }
     }
 }

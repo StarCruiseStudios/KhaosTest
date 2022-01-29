@@ -19,7 +19,7 @@ internal class KhaosExecutorCollection private constructor(
     /**
      * Executes the test described by the given [request] and [testDescriptor].
      */
-    fun <T : TestDescriptor> execute(request: ExecutionRequest, testDescriptor: T) {
+    suspend fun <T : TestDescriptor> execute(request: ExecutionRequest, testDescriptor: T) {
         @Suppress("UNCHECKED_CAST")
         val executor = executors[testDescriptor.javaClass] as? KhaosExecutor<T>
         checkNotNull(executor) {

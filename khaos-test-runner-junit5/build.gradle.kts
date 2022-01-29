@@ -72,7 +72,8 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-    implementation("org.slf4j:slf4j-api:1.7.32")
+    implementation("org.slf4j:slf4j-api:1.7.33")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
     testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
@@ -83,7 +84,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
     testImplementation("org.junit.platform:junit-platform-console:1.8.2")
     testImplementation("org.junit.platform:junit-platform-testkit:1.8.2")
-    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("io.mockk:mockk:1.12.2")
 
 }
 

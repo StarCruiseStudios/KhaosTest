@@ -7,6 +7,9 @@
 package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
@@ -16,7 +19,7 @@ import org.junit.platform.engine.TestExecutionResult
  * [KhaosSpecTestDescriptor].
  */
 internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
-    override fun executeDescriptor(
+    override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosSpecTestDescriptor,
         executor: KhaosExecutorCollection
@@ -28,12 +31,17 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
         }
 
         request.engineExecutionListener.executionStarted(testDescriptor)
-        testDescriptor.writer.printSpecBanner(testDescriptor.displayName)
 
-        testDescriptor.children
-            .forEach { childDescriptor: TestDescriptor ->
-                executor.execute(request, childDescriptor)
-            }
+        coroutineScope {
+            testDescriptor.writer.printSpecBanner(testDescriptor.displayName)
+
+            testDescriptor.children
+                .forEach { childDescriptor: TestDescriptor ->
+                    launch(Dispatchers.Default) {
+                        executor.execute(request, childDescriptor)
+                    }
+                }
+        }
         request.engineExecutionListener.executionFinished(testDescriptor, TestExecutionResult.successful())
     }
 }

@@ -18,5 +18,5 @@ internal interface KhaosExecutor<T : TestDescriptor> {
      * Executes the test described by the given [request] and [testDescriptor].
      * A reference to the root [executor] is provided for nested test execution.
      */
-    fun executeDescriptor(request: ExecutionRequest, testDescriptor: T, executor: KhaosExecutorCollection)
+    suspend fun executeDescriptor(request: ExecutionRequest, testDescriptor: T, executor: KhaosExecutorCollection)
 }

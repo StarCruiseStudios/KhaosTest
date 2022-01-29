@@ -9,6 +9,9 @@ package com.starcruisestudios.khaos.test.junit5.engine
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescriptor
 import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosFeatureExecution
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
@@ -18,7 +21,7 @@ import org.junit.platform.engine.TestExecutionResult
  * [KhaosFeatureTestDescriptor].
  */
 internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor> {
-    override fun executeDescriptor(
+    override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosFeatureTestDescriptor,
         executor: KhaosExecutorCollection
@@ -30,6 +33,7 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
         }
 
         request.engineExecutionListener.executionStarted(testDescriptor)
+
         testDescriptor.writer.printFeatureBanner(
             testDescriptor.displayName,
             testDescriptor.tags.map { it.name })
@@ -40,10 +44,15 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
             testDescriptor.setUpFeatureSteps,
             testDescriptor.cleanUpFeatureSteps
         ) {
-            testDescriptor.children
-                .forEach { childDescriptor: TestDescriptor ->
-                    executor.execute(request, childDescriptor)
-                }
+            coroutineScope {
+                testDescriptor.children
+                    .forEach { childDescriptor: TestDescriptor ->
+                        launch(Dispatchers.Default) {
+                            executor.execute(request, childDescriptor)
+
+                        }
+                    }
+            }
         }
 
         val testExecutionResult = when (result) {
