@@ -26,6 +26,7 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
 
     companion object {
         private const val FAIL_ON_PENDING = "com.starcruisestudios.khaos.test.failOnPending"
+        private const val PARALLEL = "junit.jupiter.execution.parallel.enabled"
     }
 
     /**
@@ -37,5 +38,15 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
      */
     val failOnPending: Boolean get() {
         return config.getBoolean(FAIL_ON_PENDING).orElse(true)
+    }
+
+    /**
+     * Indicates whether test scenarios should be executed in parallel.
+     *
+     * Specify using the "junit.jupiter.execution.parallel.enabled" property.
+     * Defaults to false.
+     */
+    val parallel: Boolean get() {
+        return config.getBoolean(PARALLEL).orElse(false)
     }
 }

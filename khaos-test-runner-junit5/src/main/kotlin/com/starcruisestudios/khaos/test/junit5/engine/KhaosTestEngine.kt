@@ -8,6 +8,7 @@ package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.KhaosSlf4jLogAdapter
 import com.starcruisestudios.khaos.test.junit5.descriptors.BufferedLogContext
+import com.starcruisestudios.khaos.test.junit5.descriptors.DelegatingLogContext
 import com.starcruisestudios.khaos.test.junit5.discovery.KhaosSpecificationDiscoveryEngine
 import com.starcruisestudios.khaos.test.junit5.discovery.TestDiscoveryEngine
 import kotlinx.coroutines.runBlocking
@@ -60,12 +61,21 @@ class KhaosTestEngine : TestEngine {
         val startTime = System.nanoTime()
 
         val root = request.rootTestDescriptor
-        val rootLogContext = BufferedLogContext(KhaosSlf4jLogAdapter(logger))
+        val rootLogAdapter = KhaosSlf4jLogAdapter(logger)
+        val rootLogContext = if (request.configurationParameters.khaosParameters().parallel) {
+            rootLogAdapter.info("Executing tests in parallel")
+            BufferedLogContext(rootLogAdapter)
+        } else {
+            rootLogAdapter.info("Executing tests sequentially")
+            DelegatingLogContext(rootLogAdapter)
+        }
+
         executor.execute(request, root, rootLogContext)
+        rootLogContext.flush()
 
         val endTime = System.nanoTime()
 
         val totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime)
-        logger.info { "Total Time: $totalTime ms." }
+        logger.info("Total run time: $totalTime ms")
     }
 }

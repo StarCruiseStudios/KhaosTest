@@ -97,7 +97,8 @@ tasks.named("test", Test::class.java) {
     }
 
     systemProperties(
-        "com.starcruisestudios.khaos.test.failOnPending" to false
+        "com.starcruisestudios.khaos.test.failOnPending" to false,
+//        "junit.jupiter.execution.parallel.enabled" to true
     )
 }
 

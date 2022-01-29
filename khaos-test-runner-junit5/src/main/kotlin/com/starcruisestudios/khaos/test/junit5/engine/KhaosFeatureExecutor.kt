@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.api.KhaosLogAdapter
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescriptor
 import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosFeatureExecution
@@ -45,18 +46,54 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
                 testDescriptor.setUpFeatureSteps,
                 testDescriptor.cleanUpFeatureSteps
             ) {
-                coroutineScope {
-                    testDescriptor.children
-                        .forEach { childDescriptor: TestDescriptor ->
-                            val childLogContext = logContext.getChild(specificationInstance.logAdapter)
-                            launch(Dispatchers.Default) {
-                                executor.execute(request, childDescriptor, childLogContext)
-                            }
-                        }
+                if (request.configurationParameters.khaosParameters().parallel) {
+                    runParallel(request, testDescriptor, executor, logContext, specificationInstance.logAdapter)
+                } else {
+                    runSequential(request, testDescriptor, executor, logContext, specificationInstance.logAdapter)
                 }
             }
 
             return@executeContainer result
+        }
+    }
+
+    private suspend inline fun runParallel(
+        request: ExecutionRequest,
+        testDescriptor: KhaosFeatureTestDescriptor,
+        executor: KhaosExecutorCollection,
+        featureLogContext: KhaosLogContext,
+        specificationLogAdapter: KhaosLogAdapter
+    ) {
+        coroutineScope {
+            runEachChild(testDescriptor, featureLogContext, specificationLogAdapter) { childDescriptor, childContext ->
+                launch(Dispatchers.Default) {
+                    executor.execute(request, childDescriptor, childContext)
+                }
+            }
+        }
+    }
+
+    private suspend inline fun runSequential(
+        request: ExecutionRequest,
+        testDescriptor: KhaosFeatureTestDescriptor,
+        executor: KhaosExecutorCollection,
+        featureLogContext: KhaosLogContext,
+        specificationLogAdapter: KhaosLogAdapter
+    ) {
+        runEachChild(testDescriptor, featureLogContext, specificationLogAdapter) { childDescriptor, childContext ->
+            executor.execute(request, childDescriptor, childContext)
+        }
+    }
+
+    private inline fun runEachChild(
+        testDescriptor: KhaosFeatureTestDescriptor,
+        featureLogContext: KhaosLogContext,
+        specificationLogAdapter: KhaosLogAdapter,
+        block: (TestDescriptor, KhaosLogContext) -> Unit
+    ) {
+        testDescriptor.children.forEach { childDescriptor: TestDescriptor ->
+            val childLogContext = featureLogContext.getChild(specificationLogAdapter)
+            block(childDescriptor, childLogContext)
         }
     }
 }

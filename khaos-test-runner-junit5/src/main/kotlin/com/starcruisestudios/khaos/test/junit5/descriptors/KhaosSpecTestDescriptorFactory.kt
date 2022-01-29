@@ -27,7 +27,7 @@ internal object KhaosSpecTestDescriptorFactory {
         val specDescriptor = KhaosSpecTestDescriptor(
             props.testClass,
             props.specificationInstance,
-            props.testClass.name,
+            props.testClass.simpleName,
             specificationTestId)
         specDescriptor.setParent(parent)
 
