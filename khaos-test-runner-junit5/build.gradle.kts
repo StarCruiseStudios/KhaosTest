@@ -58,7 +58,7 @@ repositories {
 /*  Project Properties */
 
 group = "com.starcruisestudios"
-version = "0.0.1"
+version = "0.0.2"
 description = """
     Project Name: ${rootProject.name}
 """.trimIndent()

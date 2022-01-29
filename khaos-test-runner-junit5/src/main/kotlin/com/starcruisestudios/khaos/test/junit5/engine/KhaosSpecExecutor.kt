@@ -7,6 +7,7 @@
 package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.ScenarioResult
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -26,19 +27,21 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
     override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosSpecTestDescriptor,
-        executor: KhaosExecutorCollection
+        executor: KhaosExecutorCollection,
+        logContext: KhaosLogContext
     ) {
         KhaosTestExecutor.executeContainer(request, testDescriptor, emptyContainerMessage) {
             val specificationInstance = testDescriptor.specificationInstance
-            val writer = specificationInstance.formatProvider.buildWriter(
-                specificationInstance.logAdapter)
+            val specificationLogContext = logContext.getChild(specificationInstance.logAdapter)
+            val writer = specificationInstance.formatProvider.buildWriter(specificationLogContext)
             coroutineScope {
                 writer.printSpecBanner(testDescriptor.displayName)
 
                 testDescriptor.children
                     .forEach { childDescriptor: TestDescriptor ->
+                        val childLogContext = specificationLogContext.getChild(specificationInstance.logAdapter)
                         launch(Dispatchers.Default) {
-                            executor.execute(request, childDescriptor)
+                            executor.execute(request, childDescriptor, childLogContext)
                         }
                     }
             }

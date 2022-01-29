@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 
@@ -17,16 +18,21 @@ internal class KhaosExecutorCollection private constructor(
     private val executors: Map<Class<*>, KhaosExecutor<*>>
 ){
     /**
-     * Executes the test described by the given [request] and [testDescriptor].
+     * Executes the test described by the given [request] and [testDescriptor]
+     * using the given [logContext] to support nested execution.
      */
-    suspend fun <T : TestDescriptor> execute(request: ExecutionRequest, testDescriptor: T) {
+    suspend fun <T : TestDescriptor> execute(
+        request: ExecutionRequest,
+        testDescriptor: T,
+        logContext: KhaosLogContext
+    ) {
         @Suppress("UNCHECKED_CAST")
         val executor = executors[testDescriptor.javaClass] as? KhaosExecutor<T>
         checkNotNull(executor) {
             "Could not find an executor to handle tests for type ${testDescriptor.javaClass}."
         }
 
-        executor.executeDescriptor(request, testDescriptor, this)
+        executor.executeDescriptor(request, testDescriptor, this, logContext)
     }
 
     companion object {

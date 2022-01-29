@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosScenarioTestDescriptor
 import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosScenarioExecution
 import org.junit.platform.engine.ExecutionRequest
@@ -18,15 +19,15 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
     override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosScenarioTestDescriptor,
-        executor: KhaosExecutorCollection
+        executor: KhaosExecutorCollection,
+        logContext: KhaosLogContext
     ) {
         KhaosTestExecutor.executeTest(request, testDescriptor) {
             val specificationInstance = testDescriptor
                 .featureTestDescriptor
                 .specTestDescriptor
                 .specificationInstance
-            val writer = specificationInstance.formatProvider.buildWriter(
-                specificationInstance.logAdapter)
+            val writer = specificationInstance.formatProvider.buildWriter(logContext)
             writer.printScenarioBanner(
                 testDescriptor.displayName,
                 testDescriptor.tags.map { it.name })

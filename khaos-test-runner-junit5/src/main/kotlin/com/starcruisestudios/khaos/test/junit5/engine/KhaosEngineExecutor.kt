@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
     override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: EngineDescriptor,
-        executor: KhaosExecutorCollection
+        executor: KhaosExecutorCollection,
+        logContext: KhaosLogContext
     ) {
         if (testDescriptor.children.isEmpty()) {
             val reason = "No test specifications found."
@@ -35,7 +37,7 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
             testDescriptor.children
                 .forEach { childDescriptor: TestDescriptor ->
                     launch(Dispatchers.Default) {
-                        executor.execute(request, childDescriptor)
+                        executor.execute(request, childDescriptor, logContext)
                     }
                 }
         }

@@ -6,9 +6,10 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.api.KhaosSlf4jLogAdapter
+import com.starcruisestudios.khaos.test.junit5.descriptors.BufferedLogContext
 import com.starcruisestudios.khaos.test.junit5.discovery.KhaosSpecificationDiscoveryEngine
 import com.starcruisestudios.khaos.test.junit5.discovery.TestDiscoveryEngine
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.junit.platform.engine.EngineDiscoveryRequest
@@ -59,9 +60,11 @@ class KhaosTestEngine : TestEngine {
         val startTime = System.nanoTime()
 
         val root = request.rootTestDescriptor
-        coroutineScope {
-            executor.execute(request, root)
-        }
+        val rootLogContext = BufferedLogContext(KhaosSlf4jLogAdapter(logger))
+
+        executor.execute(request, root, rootLogContext)
+
+        rootLogContext.flush()
 
         val endTime = System.nanoTime()
 

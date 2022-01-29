@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 
@@ -16,7 +17,12 @@ import org.junit.platform.engine.TestDescriptor
 internal interface KhaosExecutor<T : TestDescriptor> {
     /**
      * Executes the test described by the given [request] and [testDescriptor].
-     * A reference to the root [executor] is provided for nested test execution.
+     * A reference to the root [executor] and a [logContext] is provided
+     * for nested test execution.
      */
-    suspend fun executeDescriptor(request: ExecutionRequest, testDescriptor: T, executor: KhaosExecutorCollection)
+    suspend fun executeDescriptor(
+        request: ExecutionRequest,
+        testDescriptor: T,
+        executor: KhaosExecutorCollection,
+        logContext: KhaosLogContext)
 }

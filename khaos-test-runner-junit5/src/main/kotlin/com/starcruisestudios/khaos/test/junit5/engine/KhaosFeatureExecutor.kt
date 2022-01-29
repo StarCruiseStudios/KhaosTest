@@ -6,6 +6,7 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosFeatureTestDescriptor
 import com.starcruisestudios.khaos.test.junit5.engine.execution.KhaosFeatureExecution
 import kotlinx.coroutines.Dispatchers
@@ -26,14 +27,14 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
     override suspend fun executeDescriptor(
         request: ExecutionRequest,
         testDescriptor: KhaosFeatureTestDescriptor,
-        executor: KhaosExecutorCollection
+        executor: KhaosExecutorCollection,
+        logContext: KhaosLogContext
     ) {
         KhaosTestExecutor.executeContainer(request, testDescriptor, emptyContainerMessage) {
             val specificationInstance = testDescriptor
                 .specTestDescriptor
                 .specificationInstance
-            val writer = specificationInstance.formatProvider.buildWriter(
-                specificationInstance.logAdapter)
+            val writer = specificationInstance.formatProvider.buildWriter(logContext)
             writer.printFeatureBanner(
                 testDescriptor.displayName,
                 testDescriptor.tags.map { it.name })
@@ -47,8 +48,9 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
                 coroutineScope {
                     testDescriptor.children
                         .forEach { childDescriptor: TestDescriptor ->
+                            val childLogContext = logContext.getChild(specificationInstance.logAdapter)
                             launch(Dispatchers.Default) {
-                                executor.execute(request, childDescriptor)
+                                executor.execute(request, childDescriptor, childLogContext)
                             }
                         }
                 }
