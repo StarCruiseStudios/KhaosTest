@@ -44,9 +44,9 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
      * Indicates whether test scenarios should be executed in parallel.
      *
      * Specify using the "junit.jupiter.execution.parallel.enabled" property.
-     * Defaults to false.
+     * Defaults to true.
      */
     val parallel: Boolean get() {
-        return config.getBoolean(PARALLEL).orElse(false)
+        return config.getBoolean(PARALLEL).orElse(true)
     }
 }

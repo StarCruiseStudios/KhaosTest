@@ -6,16 +6,14 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
-import com.starcruisestudios.khaos.test.api.KhaosSlf4jLogAdapter
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
+import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptor
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import org.junit.platform.engine.ExecutionRequest
-import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
 
 /**
@@ -23,8 +21,6 @@ import org.junit.platform.engine.support.descriptor.EngineDescriptor
  * [EngineDescriptor].
  */
 internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
-    private val logger = KotlinLogging.logger(javaClass.name)
-    private val logAdapter = KhaosSlf4jLogAdapter(logger)
 
     override suspend fun executeDescriptor(
         request: ExecutionRequest,
@@ -52,12 +48,15 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
     ) {
         newSingleThreadContext("KhaosTestLogging").use { loggingCoroutineContext ->
             coroutineScope {
-                runEachChild(testDescriptor, logContext) { childDescriptor, childContext ->
-                    executor.execute(request, childDescriptor, childContext)
-                    withContext(loggingCoroutineContext) {
-                        childContext.flush()
+                testDescriptor.children
+                    .filterIsInstance<KhaosSpecTestDescriptor>()
+                    .forEach { childDescriptor ->
+                        val childLogContext = logContext.getChild(childDescriptor.specificationInstance.logAdapter)
+                        executor.execute(request, childDescriptor, childLogContext)
+                        withContext(loggingCoroutineContext) {
+                            logContext.flush()
+                        }
                     }
-                }
             }
         }
     }
@@ -68,20 +67,12 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
         executor: KhaosExecutorCollection,
         logContext: KhaosLogContext
     ) {
-        runEachChild(testDescriptor, logContext) { childDescriptor, childContext ->
-            executor.execute(request, childDescriptor, childContext)
-            childContext.flush()
-        }
-    }
-
-    private inline fun runEachChild(
-        testDescriptor: EngineDescriptor,
-        logContext: KhaosLogContext,
-        block: (TestDescriptor, KhaosLogContext) -> Unit
-    ) {
-        testDescriptor.children.forEach { childDescriptor: TestDescriptor ->
-            val childContext = logContext.getChild(logAdapter)
-            block(childDescriptor, childContext)
-        }
+        testDescriptor.children
+            .filterIsInstance<KhaosSpecTestDescriptor>()
+            .forEach { childDescriptor ->
+                val childLogContext = logContext.getChild(childDescriptor.specificationInstance.logAdapter)
+                executor.execute(request, childDescriptor, childLogContext)
+                childLogContext.flush()
+            }
     }
 }

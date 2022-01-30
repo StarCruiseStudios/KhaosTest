@@ -6,13 +6,9 @@
 
 package com.starcruisestudios.khaos.test.junit5.engine
 
-import com.starcruisestudios.khaos.test.api.KhaosLogAdapter
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 
@@ -32,62 +28,15 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
         logContext: KhaosLogContext
     ) {
         KhaosTestExecutor.executeContainer(request, testDescriptor, emptyContainerMessage) {
-            val specificationInstance = testDescriptor.specificationInstance
-            val specificationLogAdapter = specificationInstance.logAdapter
-            val specificationLogContext = logContext.getChild(specificationLogAdapter)
-            val writer = specificationInstance.formatProvider.buildWriter(specificationLogContext)
+            val writer = testDescriptor.specificationInstance.formatProvider.buildWriter(logContext)
 
             writer.printSpecBanner(testDescriptor.displayName)
 
-            if (request.configurationParameters.khaosParameters().parallel) {
-                runParallel(request, testDescriptor, executor, logContext, specificationLogAdapter)
-            } else {
-                runSequential(request, testDescriptor, executor, logContext, specificationLogAdapter)
+            testDescriptor.children.forEach { childDescriptor: TestDescriptor ->
+                executor.execute(request, childDescriptor, logContext)
             }
 
             return@executeContainer ScenarioResult.PASSED
-        }
-    }
-
-    private suspend inline fun runParallel(
-        request: ExecutionRequest,
-        testDescriptor: KhaosSpecTestDescriptor,
-        executor: KhaosExecutorCollection,
-        specificationLogContext: KhaosLogContext,
-        specificationLogAdapter: KhaosLogAdapter
-    ) {
-        coroutineScope {
-            runEachChild(testDescriptor, specificationLogContext, specificationLogAdapter) {
-                    childDescriptor, childContext ->
-                launch(Dispatchers.Default) {
-                    executor.execute(request, childDescriptor, childContext)
-                }
-            }
-        }
-    }
-
-    private suspend inline fun runSequential(
-        request: ExecutionRequest,
-        testDescriptor: KhaosSpecTestDescriptor,
-        executor: KhaosExecutorCollection,
-        specificationLogContext: KhaosLogContext,
-        specificationLogAdapter: KhaosLogAdapter
-    ) {
-        runEachChild(testDescriptor, specificationLogContext, specificationLogAdapter) {
-                childDescriptor, childContext ->
-            executor.execute(request, childDescriptor, childContext)
-        }
-    }
-
-    private inline fun runEachChild(
-        testDescriptor: KhaosSpecTestDescriptor,
-        specificationLogContext: KhaosLogContext,
-        specificationLogAdapter: KhaosLogAdapter,
-        block: (TestDescriptor, KhaosLogContext) -> Unit
-    ) {
-        testDescriptor.children.forEach { childDescriptor: TestDescriptor ->
-            val childLogContext = specificationLogContext.getChild(specificationLogAdapter)
-            block(childDescriptor, childLogContext)
         }
     }
 }
