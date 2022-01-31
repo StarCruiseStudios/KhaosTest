@@ -903,21 +903,21 @@ class ValidationsTest {
                 val a = "Hello There"
                 val result = a containsMatchFor "Hello".toRegex()
                 assertTrue(result.isSuccess)
-                assertSame(a, result.getOrThrow())
+                assertEquals("Hello", result.getOrThrow())
             },
             {
                 // Passes for a partial regex match in the middle
                 val a = "Hello There"
                 val result = a containsMatchFor "The".toRegex()
                 assertTrue(result.isSuccess)
-                assertSame(a, result.getOrThrow())
+                assertEquals("The", result.getOrThrow())
             },
             {
                 // Passes when a whole regex matches
                 val a = "Hello There"
                 val result = a containsMatchFor "Hello There".toRegex()
                 assertTrue(result.isSuccess)
-                assertSame(a, result.getOrThrow())
+                assertEquals("Hello There", result.getOrThrow())
             },
             {
                 // Fails when the regex doesn't match

@@ -450,14 +450,20 @@ infix fun String.matches(regex: Regex): Result<String> {
 
 /**
  * Validates that a string contains a match for a given regex. A success
- * [Result] is returned containing the original string when it matches,
- * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ * [Result] is returned containing the first matched portion of the string when
+ * it matches, otherwise a failure [Result] with an [IllegalStateException] is
+ * returned.
  *
  * @receiver Any non-null string.
  */
 infix fun String.containsMatchFor(regex: Regex): Result<String> {
-    return getResult(regex.containsMatchIn(this)) {
-        "The string should contain a match for the regex '${regex.pattern}"
+    val matchResults = regex.find(this)
+
+    return if (matchResults != null) {
+        Result.success(matchResults.value)
+    } else {
+        Result.failure(IllegalStateException(
+            "The string should contain a match for the regex '${regex.pattern}"))
     }
 }
 
