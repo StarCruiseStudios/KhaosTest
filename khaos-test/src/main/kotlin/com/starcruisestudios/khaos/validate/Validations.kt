@@ -436,6 +436,32 @@ infix fun String.endsWithCaseInsensitiveSubstring(substring: String): Result<Str
 }
 
 /**
+ * Validates that a string matches a given regex. A success [Result] is returned
+ * containing the string when it matches, otherwise a failure [Result] with an
+ * [IllegalStateException] is returned.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.matches(regex: Regex): Result<String> {
+    return getResult(regex.matches(this)) {
+        "The string should match the regex '${regex.pattern}"
+    }
+}
+
+/**
+ * Validates that a string contains a match for a given regex. A success
+ * [Result] is returned containing the original string when it matches,
+ * otherwise a failure [Result] with an [IllegalStateException] is returned.
+ *
+ * @receiver Any non-null string.
+ */
+infix fun String.containsMatchFor(regex: Regex): Result<String> {
+    return getResult(regex.containsMatchIn(this)) {
+        "The string should contain a match for the regex '${regex.pattern}"
+    }
+}
+
+/**
  * Validates that a value is within the given [range] (inclusive). A success
  * [Result] is returned containing the value when it is in the range, otherwise
  * a failure [Result] with an [IllegalStateException] is returned.

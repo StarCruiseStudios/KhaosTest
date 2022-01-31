@@ -870,6 +870,65 @@ class ValidationsTest {
     }
 
     @Test
+    fun matches() {
+        tryAll(
+            {
+                // Fails for a partial regex match
+                val a = "Hello There"
+                val result = a matches "Hello".toRegex()
+                assertTrue(result.isFailure)
+            },
+            {
+                // Passes when a whole regex matches
+                val a = "Hello There"
+                val result = a matches "Hello There".toRegex()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Fails when the regex doesn't match
+                val a = "Hello There"
+                val result = a matches "Red".toRegex()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+
+    @Test
+    fun containsMatchFor() {
+        tryAll(
+            {
+                // Passes for a partial regex match at the beginning
+                val a = "Hello There"
+                val result = a containsMatchFor "Hello".toRegex()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Passes for a partial regex match in the middle
+                val a = "Hello There"
+                val result = a containsMatchFor "The".toRegex()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Passes when a whole regex matches
+                val a = "Hello There"
+                val result = a containsMatchFor "Hello There".toRegex()
+                assertTrue(result.isSuccess)
+                assertSame(a, result.getOrThrow())
+            },
+            {
+                // Fails when the regex doesn't match
+                val a = "Hello There"
+                val result = a containsMatchFor "Red".toRegex()
+                assertTrue(result.isFailure)
+            }
+        )
+    }
+
+    @Test
     fun isInRange() {
         tryAll(
             {
