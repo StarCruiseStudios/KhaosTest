@@ -1,135 +1,34 @@
-/*
- * Copyright (c) 2022 StarCruiseStudios, LLC. All rights reserved.
- * Licensed under the MIT license. See LICENSE file in the project root for details.
- */
-
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-// =============================================================================
-/*  Build Configuration */
-
 plugins {
-    /**
-     * The built in Gradle Base plugin. This provides tasks and conventions that
-     * are common to most builds.
-     * https://docs.gradle.org/current/userguide/base_plugin.html
-     */
-    base
+    kotlin("jvm") version libs.versions.kotlin
 
-    /**
-     * Provides Gradle tasks and configuration for building Kotlin projects for
-     * the JVM.
-     * https://plugins.gradle.org/plugin/org.jetbrains.kotlin.jvm
-     */
-    kotlin("jvm")
-
-    /**
-     * Provides the ability to publish build artifacts to a Maven repository.
-     *
-     * https://docs.gradle.org/current/userguide/publishing_maven.html
-     */
-    id("org.gradle.maven-publish")
-
-    /**
-     * Generates API Documentation.
-     *
-     * https://github.com/Kotlin/dokka
-     */
-    id("org.jetbrains.dokka")
-
-    /**
-     * https://detekt.github.io/detekt/gradle.html
-     */
-    id("io.gitlab.arturbosch.detekt").version("1.19.0")
-
-    /**
-     * Kotlin Code Coverage plugin.
-     *
-     * https://github.com/Kotlin/kotlinx-kover
-     */
-    id("org.jetbrains.kotlinx.kover") version "0.4.4"
+    alias(libs.plugins.gradle.maven.publish)
+    alias(libs.plugins.jetbrains.kover)
 }
 
-repositories {
-    mavenCentral()
-}
-
-// =============================================================================
-/*  Project Properties */
-
-group = "com.starcruisestudios"
-version = "0.0.7"
 description = """
-    Project Name: ${rootProject.name}
+    Khaos Test is a Kotlin test framework and toolkit for improving self-documentation, readability, and debugging of tests.
 """.trimIndent()
 
-// =============================================================================
-/*  Dependencies */
-
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
-    implementation("org.slf4j:slf4j-api:1.7.33")
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
-    implementation("org.junit.platform:junit-platform-commons:1.8.2")
+    implementation(libs.apache.commons.lang3)
+    implementation(libs.kotlinLogging)
+    implementation(libs.junit.platform.commons)
+    implementation(libs.slf4j.api)
 
-    testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.1")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
-    testImplementation("org.apache.logging.log4j:log4j-api:2.17.0")
-    testImplementation("org.apache.logging.log4j:log4j-core:2.17.0")
-    testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-    testImplementation("org.junit.platform:junit-platform-console:1.8.2")
+    testImplementation(libs.jackson.dataformat.yaml)
+    testImplementation(libs.jackson.databind)
+    testImplementation(libs.log4j.api)
+    testImplementation(libs.log4j.core)
+    testImplementation(libs.log4j.slf4j)
+    testImplementation(kotlin("test"))
 }
 
-// =============================================================================
-/*  Kotlin Compilation Configuration */
-
-val javaCompatibilityVersion = JavaVersion.VERSION_1_8
-val kotlinVersion = "1.6"
-tasks.withType(KotlinCompile::class.java) {
-    kotlinOptions {
-        jvmTarget = javaCompatibilityVersion.toString()
-        languageVersion = kotlinVersion
-        apiVersion = kotlinVersion
-    }
-    sourceCompatibility = javaCompatibilityVersion.toString()
-    targetCompatibility = javaCompatibilityVersion.toString()
-}
-
-java {
-    sourceCompatibility = javaCompatibilityVersion
-    targetCompatibility = javaCompatibilityVersion
-}
-
-
-// =============================================================================
-/*  Build Configuration */
-
-tasks.named("test", Test::class.java) {
+tasks.test {
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
     }
 }
-
-detekt {
-    config = files("../config/detekt/detekt.yml")
-}
-
-tasks.dokkaHtml.configure {
-    dokkaSourceSets {
-        configureEach {
-            includes.from("packages.md")
-            samples.from("src/test/kotlin")
-        }
-    }
-}
-
-// =============================================================================
-/*  Publish Configuration */
 
 tasks.withType(Jar::class.java) {
     doFirst {

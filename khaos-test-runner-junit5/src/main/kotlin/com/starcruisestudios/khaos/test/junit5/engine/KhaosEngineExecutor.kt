@@ -4,15 +4,14 @@
  * See LICENSE file in the project root for details.
  */
 
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.starcruisestudios.khaos.test.junit5.engine
 
 import com.starcruisestudios.khaos.test.api.ScenarioResult
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosLogContext
 import com.starcruisestudios.khaos.test.junit5.descriptors.KhaosSpecTestDescriptor
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
 

@@ -10,7 +10,7 @@
 
 package com.starcruisestudios.khaos.test.api
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.platform.commons.annotation.Testable
 
 /**
@@ -34,7 +34,7 @@ interface KhaosSpecification {
      * This property can be overridden to define a custom logger.
      */
     val logAdapter: KhaosLogAdapter
-        get() = KhaosSlf4jLogAdapter(KotlinLogging.logger(javaClass.name))
+        get() = KhaosKLogAdapter(KotlinLogging.logger { })
 
     /**
      * The [KhaosFormatProvider] that provides the format used when logging

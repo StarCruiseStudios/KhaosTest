@@ -6,23 +6,23 @@
 
 package com.starcruisestudios.khaos.test.api
 
-import org.slf4j.Logger
+import io.github.oshai.kotlinlogging.KLogger
 
 /**
- * An SLF4J adapter for the [KhaosLogAdapter] interface.
+ * A KotlinLogging adapter for the [KhaosLogAdapter] interface.
  *
- * @property logger The [Logger] instance used to output messages.
+ * @property logger The [KLogger] instance used to output messages.
  */
-class KhaosSlf4jLogAdapter(private val logger: Logger) : KhaosLogAdapter {
+class KhaosKLogAdapter(private val logger: KLogger) : KhaosLogAdapter {
     override fun info(message: String) {
-        logger.info(message)
+        logger.info { message }
     }
 
     override fun warn(message: String) {
-        logger.warn(message)
+        logger.warn { message }
     }
 
     override fun error(message: String) {
-        logger.error(message)
+        logger.error { message }
     }
 }

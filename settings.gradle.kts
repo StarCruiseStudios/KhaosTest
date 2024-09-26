@@ -1,15 +1,15 @@
-/*
- * Copyright (c) 2022 StarCruiseStudios, LLC. All rights reserved.
- * Licensed under the MIT license. See LICENSE file in the project root for details.
- */
-
 pluginManagement {
     repositories {
-        // Default gradle plugin portal.
         gradlePluginPortal()
-
-        // Pulls development dependencies from local machine.
         mavenLocal()
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("libs.versions.toml"))
+        }
     }
 }
 
