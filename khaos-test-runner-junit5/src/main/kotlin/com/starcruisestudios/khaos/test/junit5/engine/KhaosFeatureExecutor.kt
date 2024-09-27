@@ -43,6 +43,7 @@ internal object KhaosFeatureExecutor : KhaosExecutor<KhaosFeatureTestDescriptor>
                 }
             }
 
+            logContext.flush()
             return@executeContainer result
         }
     }

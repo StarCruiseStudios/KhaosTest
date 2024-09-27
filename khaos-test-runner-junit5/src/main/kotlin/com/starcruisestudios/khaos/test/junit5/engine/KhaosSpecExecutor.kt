@@ -36,6 +36,7 @@ internal object KhaosSpecExecutor : KhaosExecutor<KhaosSpecTestDescriptor> {
                 executor.execute(request, childDescriptor, logContext)
             }
 
+            logContext.flush()
             return@executeContainer ScenarioResult.PASSED
         }
     }

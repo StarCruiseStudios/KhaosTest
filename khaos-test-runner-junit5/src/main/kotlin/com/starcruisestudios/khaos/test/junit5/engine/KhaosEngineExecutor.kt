@@ -34,6 +34,7 @@ internal object KhaosEngineExecutor : KhaosExecutor<EngineDescriptor> {
                 runSequential(request, testDescriptor, executor, logContext)
             }
 
+            logContext.flush()
             return@executeContainer ScenarioResult.PASSED
         }
     }

@@ -39,6 +39,7 @@ internal object KhaosScenarioExecutor : KhaosExecutor<KhaosScenarioTestDescripto
                 testDescriptor.scenarioImplementation)
 
             writer.printScenarioResultBanner(result)
+            logContext.flush()
             return@executeTest result
         }
     }
