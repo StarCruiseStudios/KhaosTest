@@ -15,6 +15,7 @@ dependencies {
     testImplementation(project(":khaos-test-runner-junit5"))
     testImplementation(project(":khaos-test"))
 
+    testImplementation(libs.khaos.lang)
     testImplementation(libs.jackson.dataformat.yaml)
     testImplementation(libs.jackson.databind)
     testImplementation(libs.kotlinLogging)

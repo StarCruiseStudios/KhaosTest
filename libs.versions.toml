@@ -4,7 +4,7 @@ jackson = "2.17.2"
 jetbrains-kover = "0.9.0-RC"
 junit-jupiter = "5.8.2"
 junit-platform = "1.11.0"
-khaos-test = "0.0.9"
+khaos = "0.0.2"
 kotlin = "2.0.20"
 kotlinLogging = "7.0.0"
 kotlinx = "1.9.0"
@@ -20,6 +20,7 @@ junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", v
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit-jupiter" }
 junit-platform-commons = { group = "org.junit.platform", name = "junit-platform-commons", version.ref = "junit-platform" }
 junit-platform-testkit = { group = "org.junit.platform", name = "junit-platform-testkit", version.ref = "junit-platform" }
+khaos-lang = { group = "com.starcruisestudios", name = "khaos-lang", version.ref = "khaos" }
 kotlinLogging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlinLogging" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api", version.ref = "log4j" }

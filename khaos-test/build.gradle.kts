@@ -14,7 +14,7 @@ dependencies {
     implementation(libs.kotlinLogging)
     implementation(libs.junit.platform.commons)
     implementation(libs.slf4j.api)
-
+    testImplementation(libs.khaos.lang)
     testImplementation(libs.jackson.dataformat.yaml)
     testImplementation(libs.jackson.databind)
     testImplementation(libs.log4j.api)
