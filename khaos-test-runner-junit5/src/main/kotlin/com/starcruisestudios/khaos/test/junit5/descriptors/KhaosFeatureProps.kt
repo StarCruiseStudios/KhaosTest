@@ -6,6 +6,8 @@
 
 package com.starcruisestudios.khaos.test.junit5.descriptors
 
+import com.starcruisestudios.khaos.test.api.SourceLocation
+
 /**
  * Defines the properties used to describe a test Feature.
  *
@@ -13,9 +15,12 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
  * @property tags The tags associated with the feature.
  * @property featureSteps The steps used to define the behavior of the feature
  *   and its scenarios.
+ * @property sourceLocation The source location where the feature is declared.
  */
 internal data class KhaosFeatureProps(
     val featureName: String,
     val tags: List<String>,
-    val featureSteps: KhaosFeatureStepDefinition
+    val featureSteps: KhaosFeatureStepDefinition,
+    val sourceLocation: SourceLocation?,
+    val sourceMethodName: String?
 )

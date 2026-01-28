@@ -56,7 +56,18 @@ abstract class KhaosSpecification {
  */
 @KhaosTestDsl
 fun Feature(vararg tags: String, feature: FeatureBuilder.() -> Unit): FeatureDefinition {
-    return FeatureDefinition(tags.asList(), feature)
+    return FeatureDefinition(tags.asList(), feature, SourceLocator.capture())
+}
+
+@KhaosTestDsl
+fun Scenario(vararg tags: String, scenario: ScenarioBuilder.() -> Unit): FeatureDefinition {
+    return FeatureDefinition(
+        tags.asList(),
+        {
+            Scenario("test", scenario)
+        },
+        SourceLocator.capture()
+    )
 }
 
 /**

@@ -41,7 +41,10 @@ internal object KhaosSpecTestDescriptorFactory {
                 val featureProps = KhaosFeatureProps(
                     feature.name,
                     featureDefinition.tags,
-                    featureSteps)
+                    featureSteps,
+                    featureDefinition.sourceLocation,
+                    feature.getter.name
+                )
                 val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
                 specDescriptor.addChild(featureDescriptor)
             }
@@ -53,7 +56,9 @@ internal object KhaosSpecTestDescriptorFactory {
                 val featureProps = KhaosFeatureProps(
                     feature.name,
                     featureDefinition.tags,
-                    featureSteps)
+                    featureSteps,
+                    featureDefinition.sourceLocation,
+                    feature.name)
                 val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
                 specDescriptor.addChild(featureDescriptor)
             }

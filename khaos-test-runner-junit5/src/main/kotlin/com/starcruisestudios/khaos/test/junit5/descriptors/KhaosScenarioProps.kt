@@ -9,6 +9,7 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
+import com.starcruisestudios.khaos.test.api.SourceLocation
 
 /**
  * Defines the properties used to describe a test Scenario.
@@ -19,11 +20,14 @@ import com.starcruisestudios.khaos.test.api.ThenStepBuilder
  * @property cleanUp The steps used to define the scenario cleanup.
  * @property scenarioImplementation The test code that defines the
  *   implementation of the test scenario.
+ * @property sourceLocation The source location where the scenario is declared.
  */
 internal data class KhaosScenarioProps(
     val scenarioName: String,
     val tags: List<String>,
     val setUp: List<GivenStepBuilder.() -> Unit>,
     val cleanUp: List<ThenStepBuilder.() -> Unit>,
-    val scenarioImplementation: ScenarioBuilder.() -> Unit
+    val scenarioImplementation: ScenarioBuilder.() -> Unit,
+    val sourceLocation: SourceLocation?,
+    val sourceMethodName: String?
 )

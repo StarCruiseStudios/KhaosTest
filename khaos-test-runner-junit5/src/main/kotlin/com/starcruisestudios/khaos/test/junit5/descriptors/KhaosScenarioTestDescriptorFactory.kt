@@ -30,7 +30,9 @@ internal object KhaosScenarioTestDescriptorFactory {
             props.scenarioImplementation,
             parent,
             props.scenarioName,
-            scenarioTestId
+            scenarioTestId,
+            props.sourceLocation,
+            props.sourceMethodName
         )
         scenarioDescriptor.setParent(parent)
 

@@ -9,6 +9,7 @@ package com.starcruisestudios.khaos.test.example
 import com.starcruisestudios.khaos.lang.withEach
 import com.starcruisestudios.khaos.test.api.Feature
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
+import com.starcruisestudios.khaos.test.api.Scenario
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.verification.Verify
 import com.starcruisestudios.khaos.validate.doesNotThrow
@@ -31,6 +32,20 @@ private fun ScenarioBuilder.givenACustomerWithBankAccount(
 }
 
 object BankAccountSpecification : KhaosSpecification() {
+    
+    fun `standalone`() = Scenario {
+        val bank = Given("A bank") { Bank() }
+        val customer = Given("A customer") { Customer("Jim") }
+
+        val accountSummary = When("The customer creates an account at the bank") {
+            bank.createAccount(customer)
+        }
+
+        Then("The account has the correct initial balance", 0.0) { expected ->
+            Verify.that(accountSummary.balance isEqualTo expected)
+        }
+    }
+    
     fun `Bank account creation`() = Feature {
         Scenario("A new bank account is created with an initial balance") {
             val bank = Given("A bank") { Bank() }
