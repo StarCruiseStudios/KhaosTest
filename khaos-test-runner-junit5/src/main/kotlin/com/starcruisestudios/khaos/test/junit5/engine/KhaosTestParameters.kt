@@ -27,6 +27,7 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
     companion object {
         private const val FAIL_ON_PENDING = "com.starcruisestudios.khaos.test.failOnPending"
         private const val PARALLEL = "junit.jupiter.execution.parallel.enabled"
+//        private const val TAGS = 
     }
 
     /**

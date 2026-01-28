@@ -46,7 +46,7 @@ object BankAccountSpecification : KhaosSpecification() {
         }
     }
     
-    fun `Bank account creation`() = Feature {
+    fun `Bank account creation`() = Feature("Tag") {
         Scenario("A new bank account is created with an initial balance") {
             val bank = Given("A bank") { Bank() }
             val customer = Given("A customer") { Customer("Jim") }
@@ -82,7 +82,7 @@ object BankAccountSpecification : KhaosSpecification() {
                 bank.deposit(customer, money)
             }
 
-            Then("The account has the expected balance", money) { expected ->
+            Then("The account has the expected balance", money+1) { expected ->
                 Verify.that(bank.getAccountSummary(customer).balance isEqualTo expected)
             }
         }

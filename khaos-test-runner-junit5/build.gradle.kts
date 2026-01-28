@@ -36,6 +36,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform {
         includeEngines("junit-jupiter")
+        excludeTags("Tag")
     }
     testLogging {
         events("passed", "skipped", "failed")
