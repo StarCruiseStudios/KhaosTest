@@ -21,7 +21,7 @@ class DiscoveryTests {
     fun `KhaosSpecification classes are discovered`() {
         // Given
         // * A test specification that implements KhaosSpecification.
-        class TestSpecification : KhaosSpecification {
+        class TestSpecification : KhaosSpecification() {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Then("The test succeeds") { Verify.that(true.isTrue()) }
@@ -59,7 +59,7 @@ class DiscoveryTests {
     fun `Feature properties are discovered`() {
         // Given
         // * A test specification that contains Features
-        class TestSpecification : KhaosSpecification {
+        class TestSpecification : KhaosSpecification() {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Then("The test succeeds") { Verify.that(true.isTrue()) }
@@ -84,7 +84,7 @@ class DiscoveryTests {
     fun `Non-Feature properties are not discovered`() {
         // Given
         // * A test specification that contains Features
-        class TestSpecification : KhaosSpecification {
+        class TestSpecification : KhaosSpecification() {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Then("The test succeeds") { Verify.that(true.isTrue()) }

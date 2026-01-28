@@ -26,7 +26,7 @@ annotation class KhaosTestDsl
  * property using the [Feature]() method.
  */
 @Testable
-interface KhaosSpecification {
+abstract class KhaosSpecification {
     /**
      * The [KhaosLogAdapter] instance used to log messages and status from this
      * specification.

@@ -10,6 +10,7 @@ import com.starcruisestudios.khaos.test.api.FeatureDefinition
 import com.starcruisestudios.khaos.test.junit5.util.childId
 import org.junit.platform.engine.TestDescriptor
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -36,6 +37,18 @@ internal object KhaosSpecTestDescriptorFactory {
             .filter { it.returnType == FeatureDefinition::class.createType() }
             .forEach { feature ->
                 val featureDefinition = feature.getter.call(props.specificationInstance) as FeatureDefinition
+                val featureSteps = KhaosFeatureStepDefinition().apply(featureDefinition.buildFeature)
+                val featureProps = KhaosFeatureProps(
+                    feature.name,
+                    featureDefinition.tags,
+                    featureSteps)
+                val featureDescriptor = KhaosFeatureTestDescriptorFactory.build(featureProps, specDescriptor)
+                specDescriptor.addChild(featureDescriptor)
+            }
+        props.specificationInstance::class.memberFunctions
+            .filter { it.returnType == FeatureDefinition::class.createType() }
+            .forEach { feature ->
+                val featureDefinition = feature.call(props.specificationInstance) as FeatureDefinition
                 val featureSteps = KhaosFeatureStepDefinition().apply(featureDefinition.buildFeature)
                 val featureProps = KhaosFeatureProps(
                     feature.name,
