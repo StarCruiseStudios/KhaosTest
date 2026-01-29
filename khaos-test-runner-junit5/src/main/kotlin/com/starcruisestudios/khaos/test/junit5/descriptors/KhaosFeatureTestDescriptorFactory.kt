@@ -26,7 +26,9 @@ internal object KhaosFeatureTestDescriptorFactory {
             props.featureSteps.cleanUpFeatureSteps,
             parent,
             props.featureName,
-            featureTestId
+            featureTestId,
+            props.sourceLocation,
+            props.sourceMethodName
         )
         featureDescriptor.setParent(parent)
 
@@ -46,7 +48,9 @@ internal object KhaosFeatureTestDescriptorFactory {
                 scenarioDefinition.tags,
                 props.featureSteps.setUpEachScenarioSteps,
                 cleanUpSteps,
-                scenarioDefinition.definition
+                scenarioDefinition.definition,
+                scenarioDefinition.sourceLocation,
+                props.sourceMethodName
             )
             val scenarioDescriptor = KhaosScenarioTestDescriptorFactory.build(scenarioProps, featureDescriptor)
             featureDescriptor.addChild(scenarioDescriptor)

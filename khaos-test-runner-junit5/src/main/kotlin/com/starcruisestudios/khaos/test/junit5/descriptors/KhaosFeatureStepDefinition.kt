@@ -12,6 +12,8 @@ import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioCleanUpBuilder
 import com.starcruisestudios.khaos.test.api.ScenarioDefinitionBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
+import com.starcruisestudios.khaos.test.api.SourceLocator
+import com.starcruisestudios.khaos.test.api.SourceLocation
 
 /**
  * Internal implementation of the [FeatureBuilder] interface that is used to
@@ -70,14 +72,18 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
     }
 
     override fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit) : ScenarioCleanUpBuilder {
-        val newScenario = ScenarioProperties(definition)
+        val newScenario = ScenarioProperties(definition, sourceLocation = SourceLocator.capture())
         scenarioDefinitions[scenarioName] = newScenario
         return ScenarioCleanUpBuilderImpl(newScenario)
     }
 
     private inner class TaggedScenarioBuilder(private val tags: List<String>) : ScenarioDefinitionBuilder {
         override fun Scenario(scenarioName: String, definition: ScenarioBuilder.() -> Unit): ScenarioCleanUpBuilder {
-            val newScenario = ScenarioProperties(definition, tags = tags)
+            val newScenario = ScenarioProperties(
+                definition,
+                tags = tags,
+                sourceLocation = SourceLocator.capture()
+            )
             this@KhaosFeatureStepDefinition.scenarioDefinitions[scenarioName] = newScenario
             return ScenarioCleanUpBuilderImpl(newScenario)
         }
@@ -91,7 +97,8 @@ internal class KhaosFeatureStepDefinition : FeatureBuilder {
 
     internal data class ScenarioProperties(
         val definition: ScenarioBuilder.() -> Unit,
-        val tags: List<String> = emptyList()
+        val tags: List<String> = emptyList(),
+        val sourceLocation: SourceLocation? = null
     ) {
         var cleanUp: (ThenStepBuilder.() -> Unit)? = null
     }

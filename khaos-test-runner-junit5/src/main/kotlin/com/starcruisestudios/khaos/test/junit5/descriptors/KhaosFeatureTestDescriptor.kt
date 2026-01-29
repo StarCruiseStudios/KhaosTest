@@ -8,10 +8,16 @@ package com.starcruisestudios.khaos.test.junit5.descriptors
 
 import com.starcruisestudios.khaos.test.api.GivenStepBuilder
 import com.starcruisestudios.khaos.test.api.ThenStepBuilder
+import com.starcruisestudios.khaos.test.api.SourceLocation
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
+import org.junit.platform.engine.support.descriptor.ClassSource
+import org.junit.platform.engine.support.descriptor.FilePosition
+import org.junit.platform.engine.support.descriptor.FileSource
+import org.junit.platform.engine.support.descriptor.MethodSource
+import java.io.File
 
 /**
  * [TestDescriptor] for a Feature that has been discovered by the test engine.
@@ -38,11 +44,37 @@ internal class KhaosFeatureTestDescriptor(
     val cleanUpFeatureSteps: List<ThenStepBuilder.() -> Unit>,
     val specTestDescriptor: KhaosSpecTestDescriptor,
     displayName: String,
-    uniqueId: UniqueId
-) : AbstractTestDescriptor(uniqueId, displayName) {
+    uniqueId: UniqueId,
+    sourceLocation: SourceLocation?,
+    sourceMethodName: String?
+) : AbstractTestDescriptor(
+    uniqueId,
+    displayName,
+    buildSource(specTestDescriptor, sourceLocation, sourceMethodName)
+) {
     private val tags: Set<TestTag> = tags.map { TestTag.create(it) }.toSet()
 
     override fun getType(): TestDescriptor.Type = TestDescriptor.Type.CONTAINER
 
     override fun getTags() = tags
+
+    companion object {
+        private fun buildSource(
+            specTestDescriptor: KhaosSpecTestDescriptor,
+            sourceLocation: SourceLocation?,
+            sourceMethodName: String?
+        ): org.junit.platform.engine.TestSource {
+            return when {
+                sourceMethodName != null -> MethodSource.from(
+                    specTestDescriptor.specificationClass.name,
+                    sourceMethodName
+                )
+                sourceLocation != null -> FileSource.from(
+                    File(sourceLocation.filePath),
+                    FilePosition.from(sourceLocation.lineNumber)
+                )
+                else -> ClassSource.from(specTestDescriptor.specificationClass)
+            }
+        }
+    }
 }

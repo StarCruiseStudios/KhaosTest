@@ -7,8 +7,8 @@ Khaos Test allows a developer to intuitively structure tests as individual
 scenarios that make up features, and features are grouped into a specification.
 
 ```kotlin
-object BankAccountSpecification : KhaosSpecification {
-    val `Bank account creation` = Feature {
+object BankAccountSpecification : KhaosSpecification() {
+    fun `Bank account creation`() = Feature {
         Scenario("A new bank account is created with an initial balance") {
             val bank = Given("A bank") { Bank() }
             val customer = Given("A customer") { Customer("Jim") }
@@ -35,7 +35,7 @@ object BankAccountSpecification : KhaosSpecification {
         }
     }
 
-    val `Bank account deposits and withdrawals` = Feature {
+    fun `Bank account deposits and withdrawals`() = Feature {
         Scenario("Money is deposited in a bank account") {
             val (bank, customer) = givenACustomerWithBankAccount("Jim")
             val money = Given("The customer has some money") { 5.0 }

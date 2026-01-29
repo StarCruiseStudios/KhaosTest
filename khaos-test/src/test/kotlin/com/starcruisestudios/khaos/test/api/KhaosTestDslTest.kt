@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 class KhaosTestDslTest {
     @Test
     fun khaosTestDslCompiles() {
-        class TestSpecification : KhaosSpecification {
+        class TestSpecification : KhaosSpecification() {
             val `test feature` = Feature {
                 SetUpFeature {
                     Given("Do some feature set up action.") { }

@@ -14,4 +14,6 @@ package com.starcruisestudios.khaos.test.api
  */
 class FeatureDefinition internal constructor(
     val tags: List<String>,
-    val buildFeature: FeatureBuilder.() -> Unit)
+    val buildFeature: FeatureBuilder.() -> Unit,
+    val sourceLocation: SourceLocation?
+)

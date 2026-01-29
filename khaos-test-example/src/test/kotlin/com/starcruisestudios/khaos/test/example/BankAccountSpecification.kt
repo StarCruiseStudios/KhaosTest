@@ -9,6 +9,7 @@ package com.starcruisestudios.khaos.test.example
 import com.starcruisestudios.khaos.lang.withEach
 import com.starcruisestudios.khaos.test.api.Feature
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
+import com.starcruisestudios.khaos.test.api.Scenario
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.verification.Verify
 import com.starcruisestudios.khaos.validate.doesNotThrow
@@ -30,8 +31,22 @@ private fun ScenarioBuilder.givenACustomerWithBankAccount(
     return BankCustomer(bank, customer)
 }
 
-object BankAccountSpecification : KhaosSpecification {
-    val `Bank account creation` = Feature {
+object BankAccountSpecification : KhaosSpecification() {
+    
+    fun `standalone`() = Scenario {
+        val bank = Given("A bank") { Bank() }
+        val customer = Given("A customer") { Customer("Jim") }
+
+        val accountSummary = When("The customer creates an account at the bank") {
+            bank.createAccount(customer)
+        }
+
+        Then("The account has the correct initial balance", 0.0) { expected ->
+            Verify.that(accountSummary.balance isEqualTo expected)
+        }
+    }
+    
+    fun `Bank account creation`() = Feature("Tag") {
         Scenario("A new bank account is created with an initial balance") {
             val bank = Given("A bank") { Bank() }
             val customer = Given("A customer") { Customer("Jim") }
@@ -58,7 +73,7 @@ object BankAccountSpecification : KhaosSpecification {
         }
     }
 
-    val `Bank account deposits and withdrawals` = Feature {
+    fun `Bank account deposits and withdrawals`() = Feature {
         Scenario("Money is deposited in a bank account") {
             val (bank, customer) = givenACustomerWithBankAccount("Jim")
             val money = Given("The customer has some money") { 5.0 }
@@ -67,7 +82,7 @@ object BankAccountSpecification : KhaosSpecification {
                 bank.deposit(customer, money)
             }
 
-            Then("The account has the expected balance", money) { expected ->
+            Then("The account has the expected balance", money+1) { expected ->
                 Verify.that(bank.getAccountSummary(customer).balance isEqualTo expected)
             }
         }

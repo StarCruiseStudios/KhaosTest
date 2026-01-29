@@ -20,7 +20,7 @@ class ExecutionTests {
     fun `No exceptions results in success`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification {
+        class TestSpecification : KhaosSpecification() {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Then("The test succeeds")
@@ -39,7 +39,7 @@ class ExecutionTests {
     fun `Exception in given results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Given("An exception is thrown") { throw TestException("Exception in given") }
@@ -58,7 +58,7 @@ class ExecutionTests {
     fun `Exception in when results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     When("An exception is thrown") { throw TestException("Exception in when") }
@@ -77,7 +77,7 @@ class ExecutionTests {
     fun `Exception in then results in failure`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     Then("An exception is thrown") { throw TestException("Exception in then") }
@@ -104,7 +104,7 @@ class ExecutionTests {
     fun `Exception oustide of steps results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") {
                     throw TestException("Exception outside of steps")
@@ -123,7 +123,7 @@ class ExecutionTests {
     fun `Exception in SetUpEachScenario results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 SetUpEachScenario {
                     throw TestException("Exception in setup")
@@ -144,7 +144,7 @@ class ExecutionTests {
     fun `Exception in CleanUpEachScenario results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 CleanUpEachScenario {
                     throw TestException("Exception in cleanup")
@@ -165,7 +165,7 @@ class ExecutionTests {
     fun `Exception in scenario CleanUp results in error`() {
         // Given
         // * A test specification
-        class TestSpecification : KhaosSpecification  {
+        class TestSpecification : KhaosSpecification()  {
             val `Test Feature` = Feature {
                 Scenario("A test Scenario") { }
                     .CleanUp {

@@ -26,7 +26,7 @@ annotation class KhaosTestDsl
  * property using the [Feature]() method.
  */
 @Testable
-interface KhaosSpecification {
+abstract class KhaosSpecification {
     /**
      * The [KhaosLogAdapter] instance used to log messages and status from this
      * specification.
@@ -56,7 +56,18 @@ interface KhaosSpecification {
  */
 @KhaosTestDsl
 fun Feature(vararg tags: String, feature: FeatureBuilder.() -> Unit): FeatureDefinition {
-    return FeatureDefinition(tags.asList(), feature)
+    return FeatureDefinition(tags.asList(), feature, SourceLocator.capture())
+}
+
+@KhaosTestDsl
+fun Scenario(vararg tags: String, scenario: ScenarioBuilder.() -> Unit): FeatureDefinition {
+    return FeatureDefinition(
+        tags.asList(),
+        {
+            Scenario("test", scenario)
+        },
+        SourceLocator.capture()
+    )
 }
 
 /**
