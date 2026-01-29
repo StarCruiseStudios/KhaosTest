@@ -24,9 +24,18 @@ fun ConfigurationParameters.khaosParameters() : KhaosTestParameters {
  */
 class KhaosTestParameters(private val config: ConfigurationParameters) {
 
+    /**
+     * Represents a tag filter used to include or exclude tests based on tags.
+     *
+     * @param tag The tag to filter on.
+     * @param include True to include tests with the tag, false to exclude them.
+     */
+    data class TagFilter(val tag: String, val include: Boolean)
+    
     companion object {
         private const val FAIL_ON_PENDING = "com.starcruisestudios.khaos.test.failOnPending"
         private const val PARALLEL = "junit.jupiter.execution.parallel.enabled"
+        private const val TAGS = "junit.jupiter.tags"
     }
 
     /**
@@ -48,5 +57,26 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
      */
     val parallel: Boolean get() {
         return config.getBoolean(PARALLEL).orElse(true)
+    }
+    
+    /**
+     * The set of tag filters to apply when executing tests.
+     *
+     * Specify using the "junit.jupiter.tags" property. Tags should be
+     * comma-separated. Prefix a tag with "-" to exclude it.
+     *
+     * Examples:
+     *   "fast, database" - includes tests with either the "fast" or
+     *     "database" tags.
+     *   "fast, -database" - includes tests with the "fast" tag, but excludes
+     *     those with the "database" tag.
+     */
+    val tags: Set<TagFilter> get() {
+        return config.get(TAGS).map {
+            it.split(',')
+                .map { tag -> tag.trim() }
+                .map { tag -> TagFilter(tag.removePrefix("-"), !tag.startsWith('-'))}
+                .toSet()
+        }.orElse(emptySet())
     }
 }

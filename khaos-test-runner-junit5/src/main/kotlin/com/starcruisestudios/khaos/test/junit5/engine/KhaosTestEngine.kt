@@ -69,6 +69,7 @@ class KhaosTestEngine : TestEngine {
             rootLogAdapter.info("Executing tests sequentially")
             DelegatingLogContext(rootLogAdapter)
         }
+        rootLogAdapter.info("Tags: ${request.configurationParameters.khaosParameters().tags.joinToString(",") { if (it.include) it.tag else "-${it.tag}" }}")
 
         executor.execute(request, root, rootLogContext)
         rootLogContext.flush()

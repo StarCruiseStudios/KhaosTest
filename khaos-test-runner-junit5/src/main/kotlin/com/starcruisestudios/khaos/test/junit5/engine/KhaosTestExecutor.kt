@@ -32,10 +32,44 @@ internal object KhaosTestExecutor {
             request.engineExecutionListener.executionSkipped(testDescriptor, reason)
             return
         }
+        
+        val includeTags = request.configurationParameters.khaosParameters().tags
+            .filter { it.include }
+            .map { it.tag }
+        
+        
+        if (!includeTags.isEmpty() && !testIncludesTags(testDescriptor, includeTags)) {
+            request.engineExecutionListener.executionSkipped(
+                testDescriptor,
+                "Test not included by tag filter: ${includeTags.joinToString(",")}"
+            )
+            return
+        }
+
+        val excludeTags = request.configurationParameters.khaosParameters().tags
+            .filter { !it.include }
+            .map { it.tag }
+        
+        if (!excludeTags.isEmpty() && testDescriptor.tags.any { excludeTags.contains(it.name) }) {
+            request.engineExecutionListener.executionSkipped(testDescriptor, "Test excluded by tag filter: ${excludeTags.joinToString(",")}")
+            return
+        }
 
         executeTest(request, testDescriptor, execution)
     }
 
+    fun testIncludesTags(testDescriptor: TestDescriptor, includeTags: List<String>): Boolean {
+        if (testDescriptor.tags.any { includeTags.contains(it.name) }) {
+            return true
+        }
+        for (child in testDescriptor.children) {
+            if (testIncludesTags(child, includeTags)) {
+                return true
+            }
+        }
+        return false
+    }
+    
     /**
      * Runs a test [execution] defined by the given [request] and
      * [testDescriptor] and reports the result to the test framework.
