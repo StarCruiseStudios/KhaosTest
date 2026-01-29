@@ -75,6 +75,7 @@ class KhaosTestParameters(private val config: ConfigurationParameters) {
         return config.get(TAGS).map {
             it.split(',')
                 .map { tag -> tag.trim() }
+                .filter { tag -> tag.isNotEmpty() }
                 .map { tag -> TagFilter(tag.removePrefix("-"), !tag.startsWith('-'))}
                 .toSet()
         }.orElse(emptySet())
