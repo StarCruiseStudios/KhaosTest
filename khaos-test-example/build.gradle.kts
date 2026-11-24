@@ -4,7 +4,7 @@
  */
 
 plugins {
-    kotlin("jvm") version libs.versions.kotlin
+    alias(libs.plugins.kotlin.jvm)
 }
 
 description = """
@@ -16,24 +16,12 @@ dependencies {
     testImplementation(project(":khaos-test"))
 
     testImplementation(libs.khaos.lang)
-    testImplementation(libs.jackson.dataformat.yaml)
-    testImplementation(libs.jackson.databind)
-    testImplementation(libs.kotlinLogging)
-    testImplementation(libs.log4j.api)
-    testImplementation(libs.log4j.core)
-    testImplementation(libs.log4j.slf4j)
-    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlin.logging)
 }
 
-// =============================================================================
-/*  Build Configuration */
-
-tasks.named("test", Test::class.java) {
+tasks.test {
     useJUnitPlatform {
         includeEngines("khaos-test")
-    }
-    testLogging {
-        events("passed", "skipped", "failed")
     }
 
     systemProperties(

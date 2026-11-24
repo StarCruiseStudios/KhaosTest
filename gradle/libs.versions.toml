@@ -1,0 +1,37 @@
+[versions]
+jackson = "2.22.0"
+junit = "5.14.3"
+khaos = "0.0.2"
+kotlin = "2.4.21"
+kotlin-logging = "8.0.4"
+kotlinx-coroutines = "1.11.0"
+log4j = "2.26.1"
+mockk = "1.14.11"
+slf4j = "2.0.17"
+
+[libraries]
+jackson-bom = { group = "com.fasterxml.jackson", name = "jackson-bom", version.ref = "jackson" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
+jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml" }
+junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine" }
+junit-platform-commons = { group = "org.junit.platform", name = "junit-platform-commons" }
+junit-platform-engine = { group = "org.junit.platform", name = "junit-platform-engine" }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+junit-platform-testkit = { group = "org.junit.platform", name = "junit-platform-testkit" }
+khaos-lang = { group = "com.starcruisestudios", name = "khaos-lang", version.ref = "khaos" }
+kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+log4j-api = { group = "org.apache.logging.log4j", name = "log4j-api" }
+log4j-bom = { group = "org.apache.logging.log4j", name = "log4j-bom", version.ref = "log4j" }
+log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core" }
+log4j-slf4j = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+
+[bundles]
+# Logging backend used when running tests.
+test-logging = ["jackson-databind", "jackson-dataformat-yaml", "log4j-api", "log4j-core", "log4j-slf4j"]
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

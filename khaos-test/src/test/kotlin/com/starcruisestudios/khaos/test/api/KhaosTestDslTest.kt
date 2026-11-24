@@ -9,10 +9,10 @@ package com.starcruisestudios.khaos.test.api
 import com.starcruisestudios.khaos.lang.withEach
 import com.starcruisestudios.khaos.test.exceptions.TestException
 import com.starcruisestudios.khaos.test.verification.Verify
-import com.starcruisestudios.khaos.validate.doesThrow
-import com.starcruisestudios.khaos.validate.isEqualTo
-import com.starcruisestudios.khaos.validate.isInstanceOfType
-import com.starcruisestudios.khaos.validate.passes
+import com.starcruisestudios.khaos.test.validate.doesThrow
+import com.starcruisestudios.khaos.test.validate.isEqualTo
+import com.starcruisestudios.khaos.test.validate.isInstanceOfType
+import com.starcruisestudios.khaos.test.validate.passes
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 

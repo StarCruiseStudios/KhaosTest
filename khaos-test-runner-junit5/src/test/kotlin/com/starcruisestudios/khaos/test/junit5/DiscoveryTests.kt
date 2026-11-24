@@ -10,7 +10,7 @@ import com.starcruisestudios.khaos.test.api.Feature
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.junit5.engine.KhaosTestEngine
 import com.starcruisestudios.khaos.test.verification.Verify
-import com.starcruisestudios.khaos.validate.isTrue
+import com.starcruisestudios.khaos.test.validate.isTrue
 import org.junit.jupiter.api.Test
 import org.junit.platform.engine.discovery.DiscoverySelectors
 import org.junit.platform.testkit.engine.EngineTestKit

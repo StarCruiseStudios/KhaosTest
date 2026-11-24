@@ -12,9 +12,9 @@ import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.api.Scenario
 import com.starcruisestudios.khaos.test.api.ScenarioBuilder
 import com.starcruisestudios.khaos.test.verification.Verify
-import com.starcruisestudios.khaos.validate.doesNotThrow
-import com.starcruisestudios.khaos.validate.doesThrow
-import com.starcruisestudios.khaos.validate.isEqualTo
+import com.starcruisestudios.khaos.test.validate.doesNotThrow
+import com.starcruisestudios.khaos.test.validate.doesThrow
+import com.starcruisestudios.khaos.test.validate.isEqualTo
 import java.lang.IllegalArgumentException
 
 private data class BankCustomer(val bank: Bank, val customer: Customer)
@@ -82,7 +82,7 @@ object BankAccountSpecification : KhaosSpecification() {
                 bank.deposit(customer, money)
             }
 
-            Then("The account has the expected balance", money+1) { expected ->
+            Then("The account has the expected balance", money) { expected ->
                 Verify.that(bank.getAccountSummary(customer).balance isEqualTo expected)
             }
         }

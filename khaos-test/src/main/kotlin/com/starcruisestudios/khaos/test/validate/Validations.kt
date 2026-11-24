@@ -4,7 +4,7 @@
  * See LICENSE file in the project root for details.
  */
 
-package com.starcruisestudios.khaos.validate
+package com.starcruisestudios.khaos.test.validate
 
 /**
  * Validates that a value passes a given [validation]. A success [Result] is

@@ -10,9 +10,9 @@ import com.starcruisestudios.khaos.test.api.Feature
 import com.starcruisestudios.khaos.test.api.KhaosSpecification
 import com.starcruisestudios.khaos.test.exceptions.TestException
 import com.starcruisestudios.khaos.test.verification.Verify
-import com.starcruisestudios.khaos.validate.doesThrow
-import com.starcruisestudios.khaos.validate.isEqualTo
-import com.starcruisestudios.khaos.validate.isNotEqualTo
+import com.starcruisestudios.khaos.test.validate.doesThrow
+import com.starcruisestudios.khaos.test.validate.isEqualTo
+import com.starcruisestudios.khaos.test.validate.isNotEqualTo
 
 object ExampleSpecification : KhaosSpecification() {
     val `Tagged Feature` = Feature("Tag", "Hello") {

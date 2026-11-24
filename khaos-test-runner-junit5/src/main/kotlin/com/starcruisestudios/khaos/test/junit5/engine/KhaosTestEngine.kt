@@ -19,7 +19,7 @@ import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestEngine
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
-import java.util.concurrent.TimeUnit
+import kotlin.time.measureTime
 
 /**
  * A [TestEngine] implementation that facilitates discovery and execution of
@@ -58,8 +58,13 @@ class KhaosTestEngine : TestEngine {
     }
 
     override fun execute(request: ExecutionRequest) = runBlocking {
-        val startTime = System.nanoTime()
+        val totalTime = measureTime {
+            executeTests(request)
+        }
+        logger.info { "Total run time: ${totalTime.inWholeMilliseconds} ms" }
+    }
 
+    private suspend fun executeTests(request: ExecutionRequest) {
         val root = request.rootTestDescriptor
         val rootLogAdapter = KhaosKLogAdapter(logger)
         val rootLogContext = if (request.configurationParameters.khaosParameters().parallel) {
@@ -69,14 +74,11 @@ class KhaosTestEngine : TestEngine {
             rootLogAdapter.info("Executing tests sequentially")
             DelegatingLogContext(rootLogAdapter)
         }
-        rootLogAdapter.info("Tags: ${request.configurationParameters.khaosParameters().tags.joinToString(",") { if (it.include) "\"${it.tag}\"" else "\"-${it.tag}\"" }}")
+        val tags = request.configurationParameters.khaosParameters().tags
+            .joinToString(",") { if (it.include) "\"${it.tag}\"" else "\"-${it.tag}\"" }
+        rootLogAdapter.info("Tags: $tags")
 
         executor.execute(request, root, rootLogContext)
         rootLogContext.flush()
-
-        val endTime = System.nanoTime()
-
-        val totalTime = TimeUnit.NANOSECONDS.toMillis(endTime - startTime)
-        logger.info { "Total run time: $totalTime ms" }
     }
 }

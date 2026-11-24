@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2022 StarCruiseStudios, LLC. All rights reserved.
  * Licensed under the MIT license.
  * See LICENSE file in the project root for details.
@@ -26,31 +26,44 @@ object SourceLocator {
     private const val MAX_SEARCH_DEPTH = 25
     private val pathCache = ConcurrentHashMap<String, String?>()
 
+    // Only the framework's own packages are skipped, so user code that lives
+    // under com.starcruisestudios.khaos.test (such as the examples) is found.
+    private val frameworkPackages = listOf(
+        "com.starcruisestudios.khaos.test.api.",
+        "com.starcruisestudios.khaos.test.exceptions.",
+        "com.starcruisestudios.khaos.test.validate.",
+        "com.starcruisestudios.khaos.test.verification.",
+        "com.starcruisestudios.khaos.test.junit5."
+    )
+    private val walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+
     fun capture(): SourceLocation? {
-        val element = Throwable().stackTrace.firstOrNull(::isUserFrame) ?: return null
-        val fileName = element.fileName ?: return null
-        val lineNumber = element.lineNumber
+        val frame = walker.walk { frames -> frames.filter(::isUserFrame).findFirst().orElse(null) } ?: return null
+        val fileName = frame.fileName ?: return null
+        val lineNumber = frame.lineNumber
         if (lineNumber <= 0) return null
 
-        val filePath = pathCache.computeIfAbsent(fileName, ::findFilePath) ?: return null
+        // Include the package so same-named files in different packages are told apart.
+        val relativePath = frame.declaringClass.packageName.replace('.', '/') + "/" + fileName
+        val filePath = pathCache.computeIfAbsent(relativePath, ::findFilePath) ?: return null
         return SourceLocation(filePath, lineNumber)
     }
 
-    private fun isUserFrame(element: StackTraceElement): Boolean {
+    private fun isUserFrame(element: StackWalker.StackFrame): Boolean {
         val className = element.className
         return element.fileName != null &&
             element.lineNumber > 0 &&
-            !className.startsWith("com.starcruisestudios.khaos.test") &&
+            frameworkPackages.none { className.startsWith(it) } &&
             !className.startsWith("kotlin.") &&
             !className.startsWith("java.") &&
             !className.startsWith("org.junit.")
     }
 
-    private fun findFilePath(fileName: String): String? {
+    private fun findFilePath(relativePath: String): String? {
         val root = Paths.get(System.getProperty("user.dir"))
         if (!Files.exists(root)) return null
 
-        val matcher = root.fileSystem.getPathMatcher("glob:**/$fileName")
+        val matcher = root.fileSystem.getPathMatcher("glob:**/$relativePath")
         val filter = BiPredicate<Path, BasicFileAttributes> { path, attrs ->
             attrs.isRegularFile &&
                 matcher.matches(path) &&

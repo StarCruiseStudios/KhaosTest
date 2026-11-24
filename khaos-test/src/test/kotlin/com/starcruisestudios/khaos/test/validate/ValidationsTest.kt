@@ -4,7 +4,7 @@
  * See LICENSE file in the project root for details.
  */
 
-package com.starcruisestudios.khaos.validate
+package com.starcruisestudios.khaos.test.validate
 
 import com.starcruisestudios.khaos.lang.tryAll
 import com.starcruisestudios.khaos.test.exceptions.TestException

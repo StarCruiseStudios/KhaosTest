@@ -16,7 +16,7 @@ import org.junit.platform.commons.annotation.Testable
 /**
  * Marker annotation for [KhaosTestDsl] classes.
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @DslMarker
 annotation class KhaosTestDsl
@@ -33,8 +33,7 @@ abstract class KhaosSpecification {
      *
      * This property can be overridden to define a custom logger.
      */
-    val logAdapter: KhaosLogAdapter
-        get() = KhaosKLogAdapter(KotlinLogging.logger { })
+    open val logAdapter: KhaosLogAdapter by lazy { KhaosKLogAdapter(KotlinLogging.logger { }) }
 
     /**
      * The [KhaosFormatProvider] that provides the format used when logging
@@ -42,8 +41,7 @@ abstract class KhaosSpecification {
      *
      * This property can be overridden to define a custom format provider.
      */
-    val formatProvider: KhaosFormatProvider
-        get() = KhaosFormatProviders.MARKDOWN
+    open val formatProvider: KhaosFormatProvider = KhaosFormatProviders.MARKDOWN
 }
 
 /**
@@ -54,12 +52,10 @@ abstract class KhaosSpecification {
  * This function should be used for the value of a propety in a class that
  * implements the [KhaosSpecification] interface.
  */
-@KhaosTestDsl
 fun Feature(vararg tags: String, feature: FeatureBuilder.() -> Unit): FeatureDefinition {
     return FeatureDefinition(tags.asList(), feature, SourceLocator.capture())
 }
 
-@KhaosTestDsl
 fun Scenario(vararg tags: String, scenario: ScenarioBuilder.() -> Unit): FeatureDefinition {
     return FeatureDefinition(
         tags.asList(),
