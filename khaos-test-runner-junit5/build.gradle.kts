@@ -17,6 +17,7 @@ dependencies {
     implementation(kotlin("reflect"))
     implementation(libs.kotlin.logging)
     implementation(libs.junit.platform.engine)
+    implementation(libs.junit.platform.commons)
     implementation(libs.slf4j.api)
     implementation(libs.kotlinx.coroutines.core)
 
